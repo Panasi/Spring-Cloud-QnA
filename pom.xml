@@ -10,5 +10,6 @@
   <modules>
 	  <module>eureka-server</module>
 	  <module>eureka-client</module>
+	  <module>api-gateway</module>
   </modules>
 </project>
