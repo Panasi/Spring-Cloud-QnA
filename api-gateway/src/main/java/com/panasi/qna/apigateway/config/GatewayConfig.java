@@ -19,6 +19,7 @@ public class GatewayConfig {
 		return builder.routes()
 				.route("auth", r -> r.path("/auth/**").filters(f -> f.filter(filter)).uri("lb://security-service"))
 				.route("helloworld", r -> r.path("/helloworld").filters(f -> f.filter(filter)).uri("lb://eureka-client"))
+				.route("admin category", r -> r.path("/admin/categories/**").filters(f -> f.filter(filter)).uri("lb://category-service"))
 				.build();
 	}
 
