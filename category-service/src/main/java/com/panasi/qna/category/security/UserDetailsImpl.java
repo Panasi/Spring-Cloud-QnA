@@ -1,4 +1,4 @@
-package com.panasi.qna.security.service;
+package com.panasi.qna.category.security;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,52 +9,38 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.panasi.qna.security.entity.User;
-
 public class UserDetailsImpl implements UserDetails {
 	
 	private static final long serialVersionUID = 1L;
 	private Integer id;
 	private String username;
-	private String email;
-	@JsonIgnore
-	private String password;
 	private Collection<? extends GrantedAuthority> authorities;
 	
-	public UserDetailsImpl(Integer id, String username, String email, String password,
-			Collection<? extends GrantedAuthority> authorities) {
+	public UserDetailsImpl(Integer id, String username, Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.username = username;
-		this.email = email;
-		this.password = password;
 		this.authorities = authorities;
 	}
 	
 	public static UserDetailsImpl build(User user) {
 		List<GrantedAuthority> authorities = user.getRoles().stream()
-				.map(role -> new SimpleGrantedAuthority(role.getName().name()))
+				.map(SimpleGrantedAuthority::new)
 				.collect(Collectors.toList());
 
 		return new UserDetailsImpl(
-			user.getId(), 
-			user.getUsername(), 
-			user.getEmail(),
-			user.getPassword(), 
-			authorities);
+				user.getId(), 
+				user.getUsername(),  
+				authorities);
 	}
 	
 	public Integer getId() {
 		return id;
 	}
 
-	public String getEmail() {
-		return email;
-	}
 
 	@Override
 	public String getPassword() {
-		return password;
+		return null;
 	}
 
 	@Override

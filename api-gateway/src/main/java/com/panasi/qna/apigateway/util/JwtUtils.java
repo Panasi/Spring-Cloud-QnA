@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -19,9 +20,14 @@ public class JwtUtils {
 	@Value("${auth.jwtSecret}")
 	private String jwtSecret;
 
-	public boolean validateJwtToken(String authToken) {
+	public boolean validateJwtToken(String authHeader) {
+		String jwt = parseJwt(authHeader);
+		if (jwt == null) {
+			logger.error("Invalid JWT prefix: {}", "Token does not have a prefix or an invalid prefix");
+			return false;
+		}
 		try {
-			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt);
 			return true;
 		} catch (SignatureException e) {
 			logger.error("Invalid JWT signature: {}", e.getMessage());
@@ -34,8 +40,14 @@ public class JwtUtils {
 		} catch (IllegalArgumentException e) {
 			logger.error("JWT claims string is empty: {}", e.getMessage());
 		}
-
 		return false;
+	}
+	
+	private String parseJwt(String authHeader) {
+		if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
+			return authHeader.substring(7, authHeader.length());
+		}
+		return null;
 	}
 
 }
