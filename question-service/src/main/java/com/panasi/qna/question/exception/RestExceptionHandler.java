@@ -1,4 +1,4 @@
-package com.panasi.qna.category.exception;
+package com.panasi.qna.question.exception;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -54,10 +54,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
     
-    @ExceptionHandler(CategoryIsNotEmptyException.class)
-    protected ResponseEntity<Object> handleCategoryIsNotEmptyException(CategoryIsNotEmptyException ex, WebRequest request) {
-        ApiError apiError = new ApiError("Deletion conflict", ex.getMessage());
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(QuestionUpdateException.class)
+    protected ResponseEntity<Object> handleCategoryUpdateExceptionException(QuestionUpdateException ex, WebRequest request) {
+        ApiError apiError = new ApiError("Update exception", ex.getMessage());
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
     }
 
 }

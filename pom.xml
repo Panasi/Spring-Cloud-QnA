@@ -13,5 +13,6 @@
 	  <module>api-gateway</module>
 	  <module>security-service</module>
 	  <module>category-service</module>
+	  <module>question-service</module>
   </modules>
 </project>

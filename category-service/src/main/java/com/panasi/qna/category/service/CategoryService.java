@@ -11,8 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import com.panasi.qna.category.dto.CategoryDto;
+import com.panasi.qna.category.dto.CategoryDTO;
 import com.panasi.qna.category.entity.Category;
+import com.panasi.qna.category.exception.CategoryIsNotEmptyException;
 import com.panasi.qna.category.mapper.CategoryMapper;
 import com.panasi.qna.category.payload.CategoryRequest;
 import com.panasi.qna.category.repository.CategoryRepository;
@@ -28,29 +29,29 @@ public class CategoryService {
 	private final RestTemplate restTemplate = new RestTemplate();
 	
 	// Return list of all categories
-	public List<CategoryDto> getAllCategories() {
-		return categoryMapper.toCategoryDtos(categoryRepository.findAll());
+	public List<CategoryDTO> getAllCategories() {
+		return categoryMapper.toCategoryDTOs(categoryRepository.findAll());
 	}
 		
 	// Return list of subcategories of certain category
-	public List<CategoryDto> getAllSubcategories(int parentId) {
-		return categoryMapper.toCategoryDtos(categoryRepository.findAllByParentId(parentId));
+	public List<CategoryDTO> getAllSubcategories(int parentId) {
+		return categoryMapper.toCategoryDTOs(categoryRepository.findAllByParentId(parentId));
 	}
 		
 	// Return category by id
-	public CategoryDto getCategoryById(int categoryId) throws NotFoundException {
+	public CategoryDTO getCategoryById(int categoryId) throws NotFoundException {
 		Category category = categoryRepository.findById(categoryId)
 	            .orElseThrow(NotFoundException::new);
-	    return categoryMapper.toCategoryDto(category);
+	    return categoryMapper.toCategoryDTO(category);
 	}
 		
 	// Add a new category
 	public void createCategory(CategoryRequest categoryRequest) {
-		CategoryDto categoryDto = CategoryDto.builder()
+		CategoryDTO categoryDTO = CategoryDTO.builder()
 			.name(categoryRequest.getName())
 			.parentId(categoryRequest.getParentId())
 			.build();
-		Category category = categoryMapper.toCategory(categoryDto);
+		Category category = categoryMapper.toCategory(categoryDTO);
 		categoryRepository.save(category);
 	}
 		
@@ -70,7 +71,7 @@ public class CategoryService {
 		
 	// Delete certain category
 	@Transactional
-	public void deleteCategory(int categoryId) throws NotFoundException {
+	public void deleteCategory(int categoryId) throws NotFoundException, CategoryIsNotEmptyException {
 	    Category category = categoryRepository.findById(categoryId)
 	            .orElseThrow(NotFoundException::new);
 
@@ -79,15 +80,16 @@ public class CategoryService {
 	        deleteCategory(subcategory.getId());
 	    }
 
-	    List<Integer> categoryQuestionsId = getQuestionsIdFromCategory();
-	    categoryQuestionsId.forEach(id -> restTemplate.delete("http://question-service/questions/{id}", id));
-
+	    List<Integer> categoryQuestionIds = getAllQuestionIdFromCategory(categoryId);
+	    if (!categoryQuestionIds.isEmpty()) {
+	    	throw new CategoryIsNotEmptyException("Category or subcategory is not empty");
+	    }
 	    categoryRepository.delete(category);
 	}
 	
 	// Return list of question id from category
-	public List<Integer> getQuestionsIdFromCategory() {
-	    String url = "http://localhost:8765/questions/id/category/{id}";
+	public List<Integer> getAllQuestionIdFromCategory(int categoryId) {
+	    String url = "http://localhost:8765/external/questions/categoryId/" + categoryId;
 	    ResponseEntity<List<Integer>> response = restTemplate.exchange(
 	      url,
 	      HttpMethod.GET,
@@ -96,5 +98,16 @@ public class CategoryService {
 	    );
 	    return response.getBody();
 	}
+	
+	// Return list of subcategory id
+	public List<Integer> getAllSubcategoryId(int parentId) {
+		return categoryRepository.findAllCategoryIdByParentId(parentId);
+	}
+	
+	// Return is category exists
+	public boolean isCategoryExists(int categoryId) {
+		return categoryRepository.existsById(categoryId);
+	}
+	
 
 }

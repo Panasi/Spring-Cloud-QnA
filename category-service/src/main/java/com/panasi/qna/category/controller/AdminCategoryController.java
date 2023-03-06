@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.panasi.qna.category.dto.CategoryDto;
+import com.panasi.qna.category.dto.CategoryDTO;
+import com.panasi.qna.category.exception.CategoryIsNotEmptyException;
 import com.panasi.qna.category.payload.CategoryRequest;
 import com.panasi.qna.category.payload.MessageResponse;
 import com.panasi.qna.category.service.CategoryService;
@@ -28,31 +29,31 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/admin/categories")
-public class AdminController {
+public class AdminCategoryController {
 	
 	private final CategoryService categoryService;
 	
 	@GetMapping
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get all categories")
-	public ResponseEntity<List<CategoryDto>> showAllCategories() {
-		List<CategoryDto> allCategoryDtos = categoryService.getAllCategories();
+	public ResponseEntity<List<CategoryDTO>> showAllCategories() {
+		List<CategoryDTO> allCategoryDtos = categoryService.getAllCategories();
 		return new ResponseEntity<>(allCategoryDtos, HttpStatus.OK);
 	}
 	
 	@GetMapping("/{id}/subcategories")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get all subcategories")
-	public ResponseEntity<List<CategoryDto>> showSubcategories(@PathVariable int id) {
-		List<CategoryDto> allCategoryDtos = categoryService.getAllSubcategories(id);
+	public ResponseEntity<List<CategoryDTO>> showSubcategories(@PathVariable int id) {
+		List<CategoryDTO> allCategoryDtos = categoryService.getAllSubcategories(id);
 		return new ResponseEntity<>(allCategoryDtos, HttpStatus.OK);
 	}
 	
 	@GetMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get a category by id")
-	public ResponseEntity<CategoryDto> showCategoryById(@PathVariable int id) throws NotFoundException {
-		CategoryDto categoryDto = categoryService.getCategoryById(id);
+	public ResponseEntity<CategoryDTO> showCategoryById(@PathVariable int id) throws NotFoundException {
+		CategoryDTO categoryDto = categoryService.getCategoryById(id);
 		return new ResponseEntity<>(categoryDto, HttpStatus.OK);
 	}
 	
@@ -75,7 +76,7 @@ public class AdminController {
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Delete category and all subcategories")
-	public ResponseEntity<MessageResponse> deleteCategory(@PathVariable int id) throws NotFoundException {
+	public ResponseEntity<MessageResponse> deleteCategory(@PathVariable int id) throws NotFoundException, CategoryIsNotEmptyException {
 		categoryService.deleteCategory(id);
 		String message = "Category " + id + " and all its subcategories are deleted";
 		return new ResponseEntity<>(new MessageResponse(message), HttpStatus.OK);

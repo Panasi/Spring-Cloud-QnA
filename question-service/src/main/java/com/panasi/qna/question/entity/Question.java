@@ -1,4 +1,6 @@
-package com.panasi.qna.category.entity;
+package com.panasi.qna.question.entity;
+
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,22 +15,31 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "categories")
+@Table(name = "questions")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Category {
+public class Question {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
 	
-	@Column(name = "parent_id")
-	private Integer parentId;
+	@Column(name = "category_id", nullable = false)
+	private Integer categoryId;
 	
-	@Column(name = "name", nullable = false)
-	private String name;
+	@Column(name = "is_private")
+	private Boolean isPrivate;
+	
+	@Column(name = "content", nullable = false)
+	private String content;
+	
+	@Column(name = "user_id")
+	private Integer authorId;
+	
+	@Column(name = "date")
+	private LocalDateTime date;
 
 }

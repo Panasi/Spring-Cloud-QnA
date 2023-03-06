@@ -21,6 +21,10 @@ public class GatewayConfig {
 				.route("helloworld", r -> r.path("/helloworld").filters(f -> f.filter(filter)).uri("lb://eureka-client"))
 				.route("admin category", r -> r.path("/admin/categories/**").filters(f -> f.filter(filter)).uri("lb://category-service"))
 				.route("user category", r -> r.path("/categories/**").filters(f -> f.filter(filter)).uri("lb://category-service"))
+				.route("external category", r -> r.path("/external/categories/**").filters(f -> f.filter(filter)).uri("lb://category-service"))
+				.route("admin question", r -> r.path("/admin/questions/**").filters(f -> f.filter(filter)).uri("lb://question-service"))
+				.route("user question", r -> r.path("/questions/**").filters(f -> f.filter(filter)).uri("lb://question-service"))
+				.route("external question", r -> r.path("/external/questions/**").filters(f -> f.filter(filter)).uri("lb://question-service"))
 				.build();
 	}
 

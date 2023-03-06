@@ -5,10 +5,10 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CategoryDto {
+public class CategoryDTO {
 	
 	private Integer id;
-	private String name;
 	private Integer parentId;
+	private String name;
 
 }

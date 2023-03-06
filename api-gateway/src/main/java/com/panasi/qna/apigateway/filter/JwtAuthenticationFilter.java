@@ -9,6 +9,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -22,7 +23,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class JwtAuthenticationFilter implements GatewayFilter {
 
-	private static final List<String> SECURED_API_ENDPOINTS = List.of("admin/categories");
+	private static final List<String> SECURED_API_ENDPOINTS = List.of("admin/categories", "admin/questions");
     
     @Autowired
     private JwtUtils jwtUtils;
@@ -30,8 +31,9 @@ public class JwtAuthenticationFilter implements GatewayFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
+        HttpMethod httpMethod = request.getMethod();
 
-        if (isApiSecured(request)) {
+        if (isApiSecured(request) || !HttpMethod.GET.equals(httpMethod)) {
             String authToken = extractAuthHeader(request);
             if (authToken == null) {
                 return handleUnauthorizedAccessAttempt(exchange, "Unauthorized");
