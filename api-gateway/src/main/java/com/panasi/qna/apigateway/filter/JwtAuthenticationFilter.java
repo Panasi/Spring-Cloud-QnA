@@ -23,32 +23,37 @@ import reactor.core.publisher.Mono;
 @Component
 public class JwtAuthenticationFilter implements GatewayFilter {
 
-	private static final List<String> SECURED_API_ENDPOINTS = List.of("admin/categories", "admin/questions");
-    
-    @Autowired
-    private JwtUtils jwtUtils;
+	private static final List<String> SECURED_API_ENDPOINTS = List.of("/admin/");
+	private static final List<String> NOTSECURED_API_ENDPOINTS = List.of("/auth/");
 
-    @Override
-    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        ServerHttpRequest request = exchange.getRequest();
-        HttpMethod httpMethod = request.getMethod();
+	@Autowired
+	private JwtUtils jwtUtils;
 
-        if (isApiSecured(request) || !HttpMethod.GET.equals(httpMethod)) {
-            String authToken = extractAuthHeader(request);
-            if (authToken == null) {
-                return handleUnauthorizedAccessAttempt(exchange, "Unauthorized");
-            } else if (!jwtUtils.validateJwtToken(authToken)) {
-                return handleUnauthorizedAccessAttempt(exchange, "Invalid token");
-            }
-        }
+	@Override
+	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+	    ServerHttpRequest request = exchange.getRequest();
+	    HttpMethod httpMethod = request.getMethod();
+	    String path = request.getPath().toString();
+	    
+	    boolean isSecuredEndpoint = isEndpointMatched(path, SECURED_API_ENDPOINTS);
+	    boolean isNotSecuredEndpoint = isEndpointMatched(path, NOTSECURED_API_ENDPOINTS);
 
-        return chain.filter(exchange);
-    }
+	    if (isSecuredEndpoint || (!HttpMethod.GET.equals(httpMethod) && !isNotSecuredEndpoint)) {
+	        String authToken = extractAuthHeader(request);
+	        if (authToken == null) {
+	            return handleUnauthorizedAccessAttempt(exchange, "Unauthorized");
+	        } else if (!jwtUtils.validateJwtToken(authToken)) {
+	            return handleUnauthorizedAccessAttempt(exchange, "Invalid token");
+	        }
+	    }
 
-    private boolean isApiSecured(ServerHttpRequest request) {
-        return SECURED_API_ENDPOINTS.stream()
-                .anyMatch(uri -> request.getURI().getPath().contains(uri));
-    }
+	    return chain.filter(exchange);
+	}
+
+	private boolean isEndpointMatched(String path, List<String> endpoints) {
+	    return endpoints.stream()
+	            .anyMatch(path::contains);
+	}
 
     private String extractAuthHeader(ServerHttpRequest request) {
         List<String> authHeaders = request.getHeaders().getOrDefault("Authorization", Collections.emptyList());

@@ -25,6 +25,9 @@ public class GatewayConfig {
 				.route("admin question", r -> r.path("/admin/questions/**").filters(f -> f.filter(filter)).uri("lb://question-service"))
 				.route("user question", r -> r.path("/questions/**").filters(f -> f.filter(filter)).uri("lb://question-service"))
 				.route("external question", r -> r.path("/external/questions/**").filters(f -> f.filter(filter)).uri("lb://question-service"))
+				.route("admin answer", r -> r.path("/admin/answers/**").filters(f -> f.filter(filter)).uri("lb://answer-service"))
+				.route("user answer", r -> r.path("/answers/**").filters(f -> f.filter(filter)).uri("lb://answer-service"))
+				.route("external answer", r -> r.path("/external/answers/**").filters(f -> f.filter(filter)).uri("lb://answer-service"))
 				.build();
 	}
 

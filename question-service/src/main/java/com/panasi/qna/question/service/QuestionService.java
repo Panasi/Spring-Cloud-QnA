@@ -79,4 +79,9 @@ public class QuestionService {
 		return questionRepository.findAllQuestionIdByCategory(categoryId);
 	}
 	
+	// Return is question exists
+	public boolean isQuestionExists(int questionId) {
+		return questionRepository.existsById(questionId);
+	}
+	
 }

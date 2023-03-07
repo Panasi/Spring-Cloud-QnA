@@ -70,9 +70,11 @@ public class UserQuestionService extends QuestionService {
 	    int currentUserId = Utils.getCurrentUserId();
 	    Question question = questionRepository.findById(questionId)
 	            .orElseThrow(NotFoundException::new);
+	    
 	    if (question.getAuthorId() != currentUserId) {
 	    	throw new QuestionUpdateException("You can't update other users questions");
 	    }
+	    
 	    LocalDateTime dateTime = LocalDateTime.now();
 	    question.setDate(dateTime);
 	    if (Objects.nonNull(questionRequest.getContent())) {
@@ -84,6 +86,7 @@ public class UserQuestionService extends QuestionService {
 	    if (Objects.nonNull(questionRequest.getIsPrivate())) {
 	        question.setIsPrivate(questionRequest.getIsPrivate());
 	    }
+	    
 	    questionRepository.save(question);
 	}
 

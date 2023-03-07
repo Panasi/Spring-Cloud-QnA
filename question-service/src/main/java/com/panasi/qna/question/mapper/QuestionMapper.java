@@ -10,8 +10,8 @@ import com.panasi.qna.question.entity.Question;
 @Mapper(componentModel = "spring")
 public interface QuestionMapper {
 	
-	QuestionDTO toQuestionDto(Question question);
+	QuestionDTO toQuestionDTO(Question question);
 	List<QuestionDTO> toQuestionDTOs(List<Question> questions);
-	Question toQuestion(QuestionDTO questionDto);
+	Question toQuestion(QuestionDTO questionDTO);
 
 }

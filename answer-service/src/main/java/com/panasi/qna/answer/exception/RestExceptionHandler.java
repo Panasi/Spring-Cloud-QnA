@@ -1,4 +1,4 @@
-package com.panasi.qna.question.exception;
+package com.panasi.qna.answer.exception;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,6 +11,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 
 @ControllerAdvice
@@ -54,8 +55,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
     
-    @ExceptionHandler(QuestionUpdateException.class)
-    protected ResponseEntity<Object> handleQuestionUpdateException(QuestionUpdateException ex, WebRequest request) {
+    @ExceptionHandler(AnswerUpdateException.class)
+    protected ResponseEntity<Object> handleAnswerUpdateException(AnswerUpdateException ex, WebRequest request) {
         ApiError apiError = new ApiError("Update exception", ex.getMessage());
         return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
     }

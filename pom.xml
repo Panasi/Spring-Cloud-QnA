@@ -14,5 +14,6 @@
 	  <module>security-service</module>
 	  <module>category-service</module>
 	  <module>question-service</module>
+	  <module>answer-service</module>
   </modules>
 </project>

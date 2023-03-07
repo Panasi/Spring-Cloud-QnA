@@ -26,5 +26,11 @@ public class ExternalQuestionController {
 	public List<Integer> getQuestionsIdFromCategory(@PathVariable int id) {
 		return questionService.getAllQuestionIdByCategory(id);
 	}
+	
+	@GetMapping("/exists/{id}")
+	@Operation(summary = "Is question exists")
+	public boolean isQuestionExists(@PathVariable int id) {
+		return questionService.isCategoryExists(id);
+	}
 
 }
