@@ -30,7 +30,19 @@ public class ExternalQuestionController {
 	@GetMapping("/exists/{id}")
 	@Operation(summary = "Is question exists")
 	public boolean isQuestionExists(@PathVariable int id) {
-		return questionService.isCategoryExists(id);
+		return questionService.isQuestionExists(id);
+	}
+	
+	@GetMapping("/isPrivate/{id}")
+	@Operation(summary = "Get question isPrivate by question id")
+	public boolean getQuestionIsPrivate(@PathVariable int id) {
+		return questionService.getQuestionIsPrivate(id);
+	}
+	
+	@GetMapping("/authorId/{id}")
+	@Operation(summary = "Get question authorId by question id")
+	public boolean getQuestionAuthorId(@PathVariable int id) {
+		return questionService.getQuestionIsPrivate(id);
 	}
 
 }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>	
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet  id="070320231625_create_comments_tables"  author="Panasi">  
+        <createTable  tableName="question_comments">  
+            <column  name="id"  type="int"  autoIncrement="true">  
+                <constraints  primaryKey="true"  nullable="false"/>  
+            </column>
+            <column  name="question_id"  type="int">
+				<constraints  nullable="false"/> 
+            </column> 
+            <column  name="content"  type="varchar(500)"> 
+            </column>
+            <column  name="rate"  type="int">
+				<constraints  nullable="false"/> 
+            </column>
+            <column  name="user_id"  type="int">
+			</column>
+			<column  name="date"  type="datetime">
+			</column>
+        </createTable>
+        
+        <createTable  tableName="answer_comments">  
+            <column  name="id"  type="int"  autoIncrement="true">  
+                <constraints  primaryKey="true"  nullable="false"/>  
+            </column>
+            <column  name="answer_id"  type="int">
+				<constraints  nullable="false"/> 
+            </column> 
+            <column  name="content"  type="varchar(500)"> 
+            </column>
+            <column  name="rate"  type="int">
+				<constraints  nullable="false"/> 
+            </column>
+            <column  name="user_id"  type="int">
+			</column>
+			<column  name="date"  type="datetime">
+			</column>
+        </createTable>  
+    </changeSet>    
+
+</databaseChangeLog>

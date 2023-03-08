@@ -3,7 +3,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-.db
+/src/main/resources/db/database.mv.db
+/src/main/resources/db/database.trace.db
 
 ### STS ###
 .apt_generated

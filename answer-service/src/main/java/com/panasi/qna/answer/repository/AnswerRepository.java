@@ -17,4 +17,8 @@ public interface AnswerRepository extends JpaRepository<Answer, Integer> {
 	
 	public List<Answer> findAllByAuthorIdAndIsPrivate(int authorId, Boolean isPrivate);
 	
+	public boolean findIsPrivateById(int id);
+	
+	public int findAuthorIdById(int id);
+	
 }

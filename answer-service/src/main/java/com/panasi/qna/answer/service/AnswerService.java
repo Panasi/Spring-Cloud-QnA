@@ -59,5 +59,20 @@ public class AnswerService {
 		);
 		return response.getBody();
 	}
+	
+	// Return is answer exists
+	public boolean isAnswerExists(int answerId) {
+		return answerRepository.existsById(answerId);
+	}
+	
+	// Return answer isPrivate value by answer id
+	public boolean getAnswerIsPrivate(int answerId) {
+		return answerRepository.findIsPrivateById(answerId);
+	}
+		
+	// Return answer authorId value by answer id
+	public int getAnswerAuthorId(int answerId) {
+		return answerRepository.findAuthorIdById(answerId);
+	}
 
 }

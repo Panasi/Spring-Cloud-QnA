@@ -84,4 +84,14 @@ public class QuestionService {
 		return questionRepository.existsById(questionId);
 	}
 	
+	// Return question isPrivate value by question id
+	public boolean getQuestionIsPrivate(int questionId) {
+		return questionRepository.findIsPrivateById(questionId);
+	}
+	
+	// Return question authorId value by question id
+	public int getQuestionAuthorId(int questionId) {
+		return questionRepository.findAuthorIdById(questionId);
+	}
+	
 }
