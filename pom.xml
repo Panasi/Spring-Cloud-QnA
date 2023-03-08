@@ -9,7 +9,6 @@
   
   <modules>
 	  <module>eureka-server</module>
-	  <module>eureka-client</module>
 	  <module>api-gateway</module>
 	  <module>security-service</module>
 	  <module>category-service</module>
