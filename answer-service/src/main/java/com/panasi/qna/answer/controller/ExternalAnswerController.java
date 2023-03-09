@@ -43,7 +43,9 @@ public class ExternalAnswerController {
 	
 	@GetMapping("/question")
 	@Operation(summary = "Get list of answers by question")
-	public List<AnswerDTO> getAnswersByQuestion(@RequestParam int questionId, @RequestParam(required = false) Integer authorId) {
+	public List<AnswerDTO> getAnswersByQuestion(
+			@RequestParam int questionId,
+			@RequestParam(required = false) Integer authorId) {
 	    if (authorId == null) {
 	        return answerService.getAnswersByQuestion(questionId);
 	    }

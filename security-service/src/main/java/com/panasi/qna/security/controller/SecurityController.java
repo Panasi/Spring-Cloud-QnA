@@ -33,7 +33,8 @@ public class SecurityController {
 	}
 	
 	@PostMapping("/signup")
-	public ResponseEntity<MessageResponse> registerUser(@RequestBody SignUpRequest signUpRequest) throws DuplicateRegistrationException {
+	public ResponseEntity<MessageResponse> registerUser(
+			@RequestBody SignUpRequest signUpRequest) throws DuplicateRegistrationException {
 		authService.signUpUser(signUpRequest);
 		
 		String message = "You have successfully registered.";

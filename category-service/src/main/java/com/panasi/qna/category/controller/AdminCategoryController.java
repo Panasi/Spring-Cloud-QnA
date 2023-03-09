@@ -36,7 +36,7 @@ public class AdminCategoryController {
 	@GetMapping
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get all categories")
-	public ResponseEntity<List<CategoryDTO>> showAllCategories() {
+	public ResponseEntity<List<CategoryDTO>> getAllCategories() {
 		List<CategoryDTO> allCategoryDtos = categoryService.getAllCategories();
 		return new ResponseEntity<>(allCategoryDtos, HttpStatus.OK);
 	}
@@ -44,7 +44,7 @@ public class AdminCategoryController {
 	@GetMapping("/{id}/subcategories")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get all subcategories")
-	public ResponseEntity<List<CategoryDTO>> showSubcategories(@PathVariable int id) {
+	public ResponseEntity<List<CategoryDTO>> getSubcategories(@PathVariable int id) {
 		List<CategoryDTO> allCategoryDtos = categoryService.getAllSubcategories(id);
 		return new ResponseEntity<>(allCategoryDtos, HttpStatus.OK);
 	}
@@ -52,7 +52,7 @@ public class AdminCategoryController {
 	@GetMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get a category by id")
-	public ResponseEntity<CategoryDTO> showCategoryById(@PathVariable int id) throws NotFoundException {
+	public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable int id) throws NotFoundException {
 		CategoryDTO categoryDto = categoryService.getCategoryById(id);
 		return new ResponseEntity<>(categoryDto, HttpStatus.OK);
 	}
@@ -68,7 +68,9 @@ public class AdminCategoryController {
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Update category")
-	public ResponseEntity<CategoryRequest> updateCategory(@RequestBody CategoryRequest categoryRequest, @PathVariable int id) throws NotFoundException {
+	public ResponseEntity<CategoryRequest> updateCategory(
+			@RequestBody CategoryRequest categoryRequest,
+			@PathVariable int id) throws NotFoundException {
 		categoryService.updateCategory(categoryRequest, id);
 		return new ResponseEntity<>(categoryRequest, HttpStatus.ACCEPTED);
 	}
@@ -76,7 +78,8 @@ public class AdminCategoryController {
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Delete category and all subcategories")
-	public ResponseEntity<MessageResponse> deleteCategory(@PathVariable int id) throws NotFoundException, CategoryIsNotEmptyException {
+	public ResponseEntity<MessageResponse> deleteCategory(
+			@PathVariable int id) throws NotFoundException, CategoryIsNotEmptyException {
 		categoryService.deleteCategory(id);
 		String message = "Category " + id + " and all its subcategories are deleted";
 		return new ResponseEntity<>(new MessageResponse(message), HttpStatus.OK);

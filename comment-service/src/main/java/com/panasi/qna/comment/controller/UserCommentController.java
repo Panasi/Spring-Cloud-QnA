@@ -36,7 +36,8 @@ public class UserCommentController {
 	@GetMapping("/question/{questionId}/all")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Get all comments to the question")
-	public ResponseEntity<List<QuestionCommentDTO>> showAllCommentsToQuestion(@PathVariable int questionId) throws NotFoundException, ForbiddenException {
+	public ResponseEntity<List<QuestionCommentDTO>> getAllCommentsToQuestion(
+			@PathVariable int questionId) throws NotFoundException, ForbiddenException {
 		List<QuestionCommentDTO> allCommentDTOs = service.getAllCommentsToQuestion(questionId);
 		return new ResponseEntity<>(allCommentDTOs, HttpStatus.OK);
 	}
@@ -44,7 +45,8 @@ public class UserCommentController {
 	@GetMapping("/answer/{answerId}/all")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Get all comments to the answer")
-	public ResponseEntity<List<AnswerCommentDTO>> showAllCommentsToAnswer(@PathVariable int answerId) throws NotFoundException, ForbiddenException {
+	public ResponseEntity<List<AnswerCommentDTO>> getAllCommentsToAnswer(
+			@PathVariable int answerId) throws NotFoundException, ForbiddenException {
 		List<AnswerCommentDTO> allCommentDTOs = service.getAllCommentsToAnswer(answerId);
 		return new ResponseEntity<>(allCommentDTOs, HttpStatus.OK);
 	}
@@ -52,7 +54,8 @@ public class UserCommentController {
 	@GetMapping("/questions/comment/{id}")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Get question comment by id")
-	public ResponseEntity<QuestionCommentDTO> showQuestionCommentById(@PathVariable int id) throws NotFoundException, ForbiddenException {
+	public ResponseEntity<QuestionCommentDTO> getQuestionCommentById(
+			@PathVariable int id) throws NotFoundException, ForbiddenException {
 		QuestionCommentDTO commentDTO = service.getQuestionCommentById(id);
 		return new ResponseEntity<>(commentDTO, HttpStatus.OK);
 	}
@@ -60,7 +63,8 @@ public class UserCommentController {
 	@GetMapping("/answers/comment/{id}")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Get answer comment by id")
-	public ResponseEntity<AnswerCommentDTO> showAnswerCommentById(@PathVariable int id) throws NotFoundException, ForbiddenException {
+	public ResponseEntity<AnswerCommentDTO> getAnswerCommentById(
+			@PathVariable int id) throws NotFoundException, ForbiddenException {
 		AnswerCommentDTO commentDTO = service.getAnswerCommentById(id);
 		return new ResponseEntity<>(commentDTO, HttpStatus.OK);
 	}
@@ -68,7 +72,9 @@ public class UserCommentController {
 	@PostMapping("/question/{questionId}")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Add a new question comment")
-	public ResponseEntity<CommentRequest> addNewQuestionComment(@RequestBody CommentRequest commentRequest, @PathVariable int questionId) throws NotFoundException, ForbiddenException {
+	public ResponseEntity<CommentRequest> addNewQuestionComment(
+			@RequestBody CommentRequest commentRequest,
+			@PathVariable int questionId) throws NotFoundException, ForbiddenException {
 		service.createQuestionComment(commentRequest, questionId);
 		return new ResponseEntity<>(commentRequest, HttpStatus.CREATED);
 	}
@@ -76,7 +82,9 @@ public class UserCommentController {
 	@PostMapping("/answer/{answerId}")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Add a new answer comment")
-	public ResponseEntity<CommentRequest> addNewAnswerComment(@RequestBody CommentRequest commentRequest, @PathVariable int answerId) throws NotFoundException, ForbiddenException {
+	public ResponseEntity<CommentRequest> addNewAnswerComment(
+			@RequestBody CommentRequest commentRequest,
+			@PathVariable int answerId) throws NotFoundException, ForbiddenException {
 		service.createAnswerComment(commentRequest, answerId);
 		return new ResponseEntity<>(commentRequest, HttpStatus.CREATED);
 	}
@@ -84,7 +92,9 @@ public class UserCommentController {
 	@PutMapping("/questions/comment/{id}")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Update question comment")
-	public ResponseEntity<CommentRequest> updateQuestionComment(@RequestBody CommentRequest commentRequest, @PathVariable int id) throws NotFoundException, ForbiddenException {
+	public ResponseEntity<CommentRequest> updateQuestionComment(
+			@RequestBody CommentRequest commentRequest,
+			@PathVariable int id) throws NotFoundException, ForbiddenException {
 		service.updateQuestionComment(commentRequest, id);
 		return new ResponseEntity<>(commentRequest, HttpStatus.ACCEPTED);
 	}
@@ -92,7 +102,9 @@ public class UserCommentController {
 	@PutMapping("/answers/comment/{id}")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Update answer comment")
-	public ResponseEntity<CommentRequest> updateAnswerComment(@RequestBody CommentRequest commentRequest, @PathVariable int id) throws NotFoundException, ForbiddenException {
+	public ResponseEntity<CommentRequest> updateAnswerComment(
+			@RequestBody CommentRequest commentRequest,
+			@PathVariable int id) throws NotFoundException, ForbiddenException {
 		service.updateAnswerComment(commentRequest, id);
 		return new ResponseEntity<>(commentRequest, HttpStatus.ACCEPTED);
 	}

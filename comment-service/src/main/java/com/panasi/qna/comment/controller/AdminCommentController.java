@@ -37,7 +37,7 @@ public class AdminCommentController {
 	@GetMapping("/question/{questionId}/all")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get all comments to the question")
-	public ResponseEntity<List<QuestionCommentDTO>> showAllCommentsToQuestion(@PathVariable int questionId) {
+	public ResponseEntity<List<QuestionCommentDTO>> getAllCommentsToQuestion(@PathVariable int questionId) {
 		List<QuestionCommentDTO> allCommentDTOs = service.getAllCommentsToQuestion(questionId);
 		return new ResponseEntity<>(allCommentDTOs, HttpStatus.OK);
 	}
@@ -45,7 +45,7 @@ public class AdminCommentController {
 	@GetMapping("/answer/{answerId}/all")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get all comments to the answer")
-	public ResponseEntity<List<AnswerCommentDTO>> showAllCommentsToAnswer(@PathVariable int answerId) {
+	public ResponseEntity<List<AnswerCommentDTO>> getAllCommentsToAnswer(@PathVariable int answerId) {
 		List<AnswerCommentDTO> allCommentDTOs = service.getAllCommentsToAnswer(answerId);
 		return new ResponseEntity<>(allCommentDTOs, HttpStatus.OK);
 	}
@@ -53,7 +53,7 @@ public class AdminCommentController {
 	@GetMapping("/user/{userId}/questions")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get all user comments to the question")
-	public ResponseEntity<List<QuestionCommentDTO>> showAllUserCommentsToQuestions(@PathVariable int userId) {
+	public ResponseEntity<List<QuestionCommentDTO>> getAllUserCommentsToQuestions(@PathVariable int userId) {
 		List<QuestionCommentDTO> allCommentDTOs = service.getAllUserCommentsToQuestions(userId);
 		return new ResponseEntity<>(allCommentDTOs, HttpStatus.OK);
 	}
@@ -61,7 +61,7 @@ public class AdminCommentController {
 	@GetMapping("/user/{userId}/answers")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get all user comments to the answer")
-	public ResponseEntity<List<AnswerCommentDTO>> showAllUserCommentsToAnswers(@PathVariable int userId) {
+	public ResponseEntity<List<AnswerCommentDTO>> getAllUserCommentsToAnswers(@PathVariable int userId) {
 		List<AnswerCommentDTO> allCommentDTOs = service.getAllUserCommentsToAnswers(userId);
 		return new ResponseEntity<>(allCommentDTOs, HttpStatus.OK);
 	}
@@ -69,7 +69,7 @@ public class AdminCommentController {
 	@GetMapping("/questions/comment/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get question comment by id")
-	public ResponseEntity<QuestionCommentDTO> showQuestionCommentById(@PathVariable int id) throws NotFoundException {
+	public ResponseEntity<QuestionCommentDTO> getQuestionCommentById(@PathVariable int id) throws NotFoundException {
 		QuestionCommentDTO commentDTO = service.getQuestionCommentById(id);
 		return new ResponseEntity<>(commentDTO, HttpStatus.OK);
 	}
@@ -77,7 +77,7 @@ public class AdminCommentController {
 	@GetMapping("/answers/comment/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get answer comment by id")
-	public ResponseEntity<AnswerCommentDTO> showAnswerCommentById(@PathVariable int id) throws NotFoundException {
+	public ResponseEntity<AnswerCommentDTO> getAnswerCommentById(@PathVariable int id) throws NotFoundException {
 		AnswerCommentDTO commentDTO = service.getAnswerCommentById(id);
 		return new ResponseEntity<>(commentDTO, HttpStatus.OK);
 	}
@@ -85,7 +85,9 @@ public class AdminCommentController {
 	@PostMapping("/question/{questionId}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Add a new question comment")
-	public ResponseEntity<CommentRequest> addNewQuestionComment(@RequestBody CommentRequest commentRequest, @PathVariable int questionId) throws NotFoundException {
+	public ResponseEntity<CommentRequest> addNewQuestionComment(
+			@RequestBody CommentRequest commentRequest,
+			@PathVariable int questionId) throws NotFoundException {
 		service.createQuestionComment(commentRequest, questionId);
 		return new ResponseEntity<>(commentRequest, HttpStatus.CREATED);
 	}
@@ -93,7 +95,9 @@ public class AdminCommentController {
 	@PostMapping("/answer/{answerId}")
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@Operation(summary = "Add a new answer comment")
-	public ResponseEntity<CommentRequest> addNewAnswerComment(@RequestBody CommentRequest commentRequest, @PathVariable int answerId) throws NotFoundException {
+	public ResponseEntity<CommentRequest> addNewAnswerComment(
+			@RequestBody CommentRequest commentRequest,
+			@PathVariable int answerId) throws NotFoundException {
 		service.createAnswerComment(commentRequest, answerId);
 		return new ResponseEntity<>(commentRequest, HttpStatus.CREATED);
 	}
@@ -101,7 +105,9 @@ public class AdminCommentController {
 	@PutMapping("/questions/comment/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Update question comment")
-	public ResponseEntity<CommentRequest> updateQuestionComment(@RequestBody CommentRequest commentRequest, @PathVariable int id) throws NotFoundException {
+	public ResponseEntity<CommentRequest> updateQuestionComment(
+			@RequestBody CommentRequest commentRequest,
+			@PathVariable int id) throws NotFoundException {
 		service.updateQuestionComment(commentRequest, id);
 		return new ResponseEntity<>(commentRequest, HttpStatus.ACCEPTED);
 	}
@@ -109,7 +115,9 @@ public class AdminCommentController {
 	@PutMapping("/answers/comment/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Update answer comment")
-	public ResponseEntity<CommentRequest> updateAnswerComment(@RequestBody CommentRequest commentRequest, @PathVariable int id) throws NotFoundException {
+	public ResponseEntity<CommentRequest> updateAnswerComment(
+			@RequestBody CommentRequest commentRequest,
+			@PathVariable int id) throws NotFoundException {
 		service.updateAnswerComment(commentRequest, id);
 		return new ResponseEntity<>(commentRequest, HttpStatus.ACCEPTED);
 	}

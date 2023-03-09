@@ -34,14 +34,16 @@ public class UserAnswerController {
 	
 	@GetMapping("/user/{authorId}")
 	@Operation(summary = "Get user answers")
-	public ResponseEntity<List<AnswerDTO>> showUserAnswers(@PathVariable int authorId, @RequestParam(defaultValue = "all") String access) {
+	public ResponseEntity<List<AnswerDTO>> getUserAnswers(
+			@PathVariable int authorId,
+			@RequestParam(defaultValue = "all") String access) {
 		List<AnswerDTO> allAnswerDTOs = service.getUserAnswers(authorId, access);
 		return new ResponseEntity<>(allAnswerDTOs, HttpStatus.OK);
 	}
 	
 	@GetMapping("/{id}")
 	@Operation(summary = "Get answer by id")
-	public ResponseEntity<AnswerDTO> showAnswerById(@PathVariable int id) throws NotFoundException, ForbiddenException {
+	public ResponseEntity<AnswerDTO> getAnswerById(@PathVariable int id) throws NotFoundException, ForbiddenException {
 		AnswerDTO answerDTO = service.getAnswerById(id);
 		return new ResponseEntity<>(answerDTO, HttpStatus.OK);
 	}
@@ -57,7 +59,9 @@ public class UserAnswerController {
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Update answer")
-	public ResponseEntity<AnswerRequest> updateAnswer(@RequestBody AnswerRequest answerRequest, @PathVariable int id) throws NotFoundException, ForbiddenException {
+	public ResponseEntity<AnswerRequest> updateAnswer(
+			@RequestBody AnswerRequest answerRequest,
+			@PathVariable int id) throws NotFoundException, ForbiddenException {
 		service.updateAnswer(answerRequest, id);
 		return new ResponseEntity<>(answerRequest, HttpStatus.ACCEPTED);
 	}
