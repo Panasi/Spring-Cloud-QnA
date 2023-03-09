@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.panasi.qna.question.dto.QuestionDTO;
-import com.panasi.qna.question.exception.CategoryNotExistException;
-import com.panasi.qna.question.exception.QuestionUpdateException;
+import com.panasi.qna.question.dto.QuestionWithAnswersDTO;
+import com.panasi.qna.question.exception.ForbiddenException;
 import com.panasi.qna.question.payload.QuestionRequest;
 import com.panasi.qna.question.service.UserQuestionService;
 
@@ -56,10 +56,17 @@ public class UserQuestionController {
 		return new ResponseEntity<>(allQuestionDtos, HttpStatus.OK);
 	}
 	
+	@GetMapping("/{questionId}")
+	@Operation(summary = "Get question with answers by id")
+	public ResponseEntity<QuestionWithAnswersDTO> showQuestion(@PathVariable int questionId) throws NotFoundException, ForbiddenException {
+		QuestionWithAnswersDTO questionDTO = service.getQuestionById(questionId);
+		return new ResponseEntity<>(questionDTO, HttpStatus.OK);
+	}
+	
 	@PostMapping
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Add a new question")
-	public ResponseEntity<QuestionRequest> addNewQuestion(@RequestBody QuestionRequest questionRequest) throws CategoryNotExistException {
+	public ResponseEntity<QuestionRequest> addNewQuestion(@RequestBody QuestionRequest questionRequest) throws NotFoundException {
 		service.createQuestion(questionRequest);
 		return new ResponseEntity<>(questionRequest, HttpStatus.CREATED);
 	}
@@ -67,7 +74,7 @@ public class UserQuestionController {
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Update question")
-	public ResponseEntity<QuestionRequest> updateQuestion(@RequestBody QuestionRequest questionRequest, @PathVariable int id) throws NotFoundException, QuestionUpdateException {
+	public ResponseEntity<QuestionRequest> updateQuestion(@RequestBody QuestionRequest questionRequest, @PathVariable int id) throws NotFoundException, ForbiddenException {
 		service.updateQuestion(questionRequest, id);
 		return new ResponseEntity<>(questionRequest, HttpStatus.ACCEPTED);
 	}

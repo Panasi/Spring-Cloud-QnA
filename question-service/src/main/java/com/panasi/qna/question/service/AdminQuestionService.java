@@ -7,7 +7,9 @@ import java.util.Objects;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.panasi.qna.question.dto.AnswerDTO;
 import com.panasi.qna.question.dto.QuestionDTO;
+import com.panasi.qna.question.dto.QuestionWithAnswersDTO;
 import com.panasi.qna.question.entity.Question;
 import com.panasi.qna.question.payload.QuestionRequest;
 
@@ -65,6 +67,16 @@ public class AdminQuestionService extends QuestionService {
 	        questions = questionRepository.findAllByAuthorId(authorId);
 	    }
 	    return questionMapper.toQuestionDTOs(questions);
+	}
+	
+	// Return question by id
+	public QuestionWithAnswersDTO getQuestionById(int questionId) throws NotFoundException {
+		Question question = questionRepository.findById(questionId)
+				.orElseThrow(NotFoundException::new);
+		QuestionWithAnswersDTO questionDTO = fullQuestionMapper.toFullQuestionDTO(question);
+		List<AnswerDTO> answers = getAnswersByQuestion(questionId);
+		questionDTO.setAnswers(answers);
+		return questionDTO;
 	}
 	
 	// Update certain question

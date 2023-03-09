@@ -55,9 +55,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
     
-    @ExceptionHandler(AnswerUpdateException.class)
-    protected ResponseEntity<Object> handleAnswerUpdateException(AnswerUpdateException ex, WebRequest request) {
-        ApiError apiError = new ApiError("Update exception", ex.getMessage());
+    @ExceptionHandler(ForbiddenException.class)
+    protected ResponseEntity<Object> handleForbiddenException(ForbiddenException ex, WebRequest request) {
+        ApiError apiError = new ApiError("Access Denied", ex.getMessage());
         return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
     }
 

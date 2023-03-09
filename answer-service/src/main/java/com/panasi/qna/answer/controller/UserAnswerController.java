@@ -17,8 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.panasi.qna.answer.dto.AnswerDTO;
-import com.panasi.qna.answer.exception.AnswerUpdateException;
-import com.panasi.qna.answer.exception.QuestionNotExistException;
+import com.panasi.qna.answer.exception.ForbiddenException;
 import com.panasi.qna.answer.payload.AnswerRequest;
 import com.panasi.qna.answer.service.UserAnswerService;
 
@@ -43,7 +42,7 @@ public class UserAnswerController {
 	@PostMapping()
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Add a new answer")
-	public ResponseEntity<AnswerRequest> addNewAnswer(@RequestBody AnswerRequest answerRequest) throws QuestionNotExistException {
+	public ResponseEntity<AnswerRequest> addNewAnswer(@RequestBody AnswerRequest answerRequest) throws NotFoundException {
 		service.createAnswer(answerRequest);
 		return new ResponseEntity<>(answerRequest, HttpStatus.CREATED);
 	}
@@ -51,7 +50,7 @@ public class UserAnswerController {
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Update answer")
-	public ResponseEntity<AnswerRequest> updateAnswer(@RequestBody AnswerRequest answerRequest, @PathVariable int id) throws NotFoundException, AnswerUpdateException {
+	public ResponseEntity<AnswerRequest> updateAnswer(@RequestBody AnswerRequest answerRequest, @PathVariable int id) throws NotFoundException, ForbiddenException {
 		service.updateAnswer(answerRequest, id);
 		return new ResponseEntity<>(answerRequest, HttpStatus.ACCEPTED);
 	}

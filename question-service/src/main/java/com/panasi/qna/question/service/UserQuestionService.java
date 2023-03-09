@@ -8,9 +8,11 @@ import java.util.Objects;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.panasi.qna.question.dto.AnswerDTO;
 import com.panasi.qna.question.dto.QuestionDTO;
+import com.panasi.qna.question.dto.QuestionWithAnswersDTO;
 import com.panasi.qna.question.entity.Question;
-import com.panasi.qna.question.exception.QuestionUpdateException;
+import com.panasi.qna.question.exception.ForbiddenException;
 import com.panasi.qna.question.payload.QuestionRequest;
 import com.panasi.qna.question.payload.Utils;
 
@@ -64,15 +66,33 @@ public class UserQuestionService extends QuestionService {
 
 	    return questionMapper.toQuestionDTOs(questions); 
 	}
+	
+	// Return question by id
+	public QuestionWithAnswersDTO getQuestionById(int questionId) throws NotFoundException, ForbiddenException {
+		Question question = questionRepository.findById(questionId)
+				.orElseThrow(NotFoundException::new);
+		
+		boolean isQuestionPrivate = question.getIsPrivate();
+		int questionAuthorId = question.getAuthorId();
+		int currentUserId = Utils.getCurrentUserId();
+		
+		if (isQuestionPrivate && questionAuthorId != currentUserId) {
+			throw new ForbiddenException("You can't get another private question");
+		}
+		QuestionWithAnswersDTO questionDTO = fullQuestionMapper.toFullQuestionDTO(question);
+		List<AnswerDTO> answers = getAnswersByQuestionAndAuthor(questionId, currentUserId);
+		questionDTO.setAnswers(answers);
+		return questionDTO;
+	}
 		
 	// Update certain question
-	public void updateQuestion(QuestionRequest questionRequest, int questionId) throws NotFoundException, QuestionUpdateException {
+	public void updateQuestion(QuestionRequest questionRequest, int questionId) throws NotFoundException, ForbiddenException {
 	    int currentUserId = Utils.getCurrentUserId();
 	    Question question = questionRepository.findById(questionId)
 	            .orElseThrow(NotFoundException::new);
 	    
 	    if (question.getAuthorId() != currentUserId) {
-	    	throw new QuestionUpdateException("You can't update other users questions");
+	    	throw new ForbiddenException("You can't update another users questions");
 	    }
 	    
 	    LocalDateTime dateTime = LocalDateTime.now();

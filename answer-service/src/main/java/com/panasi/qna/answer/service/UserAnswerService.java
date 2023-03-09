@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.panasi.qna.answer.dto.AnswerDTO;
 import com.panasi.qna.answer.entity.Answer;
-import com.panasi.qna.answer.exception.AnswerUpdateException;
+import com.panasi.qna.answer.exception.ForbiddenException;
 import com.panasi.qna.answer.payload.AnswerRequest;
 import com.panasi.qna.answer.payload.Utils;
 
@@ -38,13 +38,13 @@ public class UserAnswerService extends AnswerService {
 	}
 	
 	// Update certain answer
-	public void updateAnswer(AnswerRequest answerRequest, int answerId) throws NotFoundException, AnswerUpdateException {
+	public void updateAnswer(AnswerRequest answerRequest, int answerId) throws NotFoundException, ForbiddenException {
 		int currentUserId = Utils.getCurrentUserId();
 		Answer answer = answerRepository.findById(answerId)
 				.orElseThrow(NotFoundException::new);
 		
 		if (answer.getAuthorId() != currentUserId) {
-	    	throw new AnswerUpdateException("You can't update other users answers");
+	    	throw new ForbiddenException("You can't update other users answers");
 	    }
 		
 		LocalDateTime dateTime = LocalDateTime.now();

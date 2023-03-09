@@ -29,7 +29,7 @@ public class UserCommentService extends CommentService {
 		int currentUserId = Utils.getCurrentUserId();
 		
 		if (isQuestionPrivate && questionAuthorId != currentUserId) {
-			throw new ForbiddenException("Can't get comments on other user's private questions");
+			throw new ForbiddenException("Can't get comments on another user's private questions");
 		}
 		
 		List<QuestionComment> allComments = questionCommentRepository.findAllByQuestionId(questionId);
@@ -48,7 +48,7 @@ public class UserCommentService extends CommentService {
 		int currentUserId = Utils.getCurrentUserId();
 		
 		if (isAnswerPrivate && answerAuthorId != currentUserId) {
-			throw new ForbiddenException("Can't get comments on other user's private answers");
+			throw new ForbiddenException("Can't get comments on another user's private answers");
 		}
 		
 		List<AnswerComment> allComments = answerCommentRepository.findAllByAnswerId(answerId);
@@ -69,7 +69,7 @@ public class UserCommentService extends CommentService {
 		int currentUserId = Utils.getCurrentUserId();
 		
 		if (isQuestionPrivate && questionAuthorId != currentUserId) {
-			throw new ForbiddenException("Can't get comment on other user's private question");
+			throw new ForbiddenException("Can't get comment on another user's private question");
 		}
 		
 		return questionCommentMapper.toCommentDTO(comment);
@@ -86,7 +86,7 @@ public class UserCommentService extends CommentService {
 		int currentUserId = Utils.getCurrentUserId();
 		
 		if (isAnswerPrivate && answerAuthorId != currentUserId) {
-			throw new ForbiddenException("Can't get comment on other user's private answer");
+			throw new ForbiddenException("Can't get comment on another user's private answer");
 		}
 		
 		return answerCommentMapper.toCommentDTO(comment);
@@ -103,7 +103,7 @@ public class UserCommentService extends CommentService {
 		int currentUserId = Utils.getCurrentUserId();
 		
 		if (isQuestionPrivate && questionAuthorId != currentUserId) {
-			throw new ForbiddenException("Can't comment on other user's private questions");
+			throw new ForbiddenException("Can't comment on another user's private questions");
 		}
 		
 		LocalDateTime dateTime = LocalDateTime.now();
@@ -129,7 +129,7 @@ public class UserCommentService extends CommentService {
 		int currentUserId = Utils.getCurrentUserId();
 		
 		if (isAnswerPrivate && answerAuthorId != currentUserId) {
-			throw new ForbiddenException("Can't comment on other user's private answers");
+			throw new ForbiddenException("Can't comment on another user's private answers");
 		}
 		
 		LocalDateTime dateTime = LocalDateTime.now();
@@ -153,7 +153,7 @@ public class UserCommentService extends CommentService {
 		int currentUserId = Utils.getCurrentUserId();
 		 
 		if (currentUserId != comment.getAuthorId()) {
-			throw new ForbiddenException("Can't update other user's questions");
+			throw new ForbiddenException("Can't update another user's questions");
 		}
 		
 		LocalDateTime dateTime = LocalDateTime.now();
@@ -175,7 +175,7 @@ public class UserCommentService extends CommentService {
 		int currentUserId = Utils.getCurrentUserId();
 		
 		if (currentUserId == comment.getAuthorId()) {
-			throw new ForbiddenException("Can't update other user's answers");
+			throw new ForbiddenException("Can't update another user's answers");
 		}
 		LocalDateTime dateTime = LocalDateTime.now();
 		comment.setDate(dateTime);

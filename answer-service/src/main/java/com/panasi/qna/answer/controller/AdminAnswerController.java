@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.panasi.qna.answer.dto.AnswerDTO;
-import com.panasi.qna.answer.exception.QuestionNotExistException;
 import com.panasi.qna.answer.payload.AnswerRequest;
 import com.panasi.qna.answer.payload.MessageResponse;
 import com.panasi.qna.answer.service.AdminAnswerService;
@@ -53,7 +52,7 @@ public class AdminAnswerController {
 	@PostMapping()
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Add a new answer")
-	public ResponseEntity<AnswerRequest> addNewAnswer(@RequestBody AnswerRequest answerRequest) throws QuestionNotExistException {
+	public ResponseEntity<AnswerRequest> addNewAnswer(@RequestBody AnswerRequest answerRequest) throws NotFoundException {
 		service.createAnswer(answerRequest);
 		return new ResponseEntity<>(answerRequest, HttpStatus.CREATED);
 	}

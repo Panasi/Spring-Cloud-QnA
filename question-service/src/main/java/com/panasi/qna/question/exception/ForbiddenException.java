@@ -1,10 +1,10 @@
 package com.panasi.qna.question.exception;
 
-public class CategoryNotExistException extends Exception {
+public class ForbiddenException extends Exception {
 	
 	private static final long serialVersionUID = 1L;
 
-	public CategoryNotExistException(String message) {
+	public ForbiddenException(String message) {
         super(message);
     }
 }

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.panasi.qna.question.dto.QuestionDTO;
-import com.panasi.qna.question.exception.CategoryNotExistException;
+import com.panasi.qna.question.dto.QuestionWithAnswersDTO;
 import com.panasi.qna.question.payload.MessageResponse;
 import com.panasi.qna.question.payload.QuestionRequest;
 import com.panasi.qna.question.service.AdminQuestionService;
@@ -68,10 +68,18 @@ public class AdminQuestionController {
 		return new ResponseEntity<>(allQuestionDtos, HttpStatus.OK);
 	}
 	
+	@GetMapping("/{questionId}")
+	@PreAuthorize("hasRole('ADMIN')")
+	@Operation(summary = "Get question with answers by id")
+	public ResponseEntity<QuestionWithAnswersDTO> showQuestion(@PathVariable int questionId) throws NotFoundException {
+		QuestionWithAnswersDTO questionDTO = service.getQuestionById(questionId);
+		return new ResponseEntity<>(questionDTO, HttpStatus.OK);
+	}
+	
 	@PostMapping
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Add a new question")
-	public ResponseEntity<QuestionRequest> addNewQuestion(@RequestBody QuestionRequest questionRequest) throws CategoryNotExistException {
+	public ResponseEntity<QuestionRequest> addNewQuestion(@RequestBody QuestionRequest questionRequest) throws NotFoundException {
 		service.createQuestion(questionRequest);
 		return new ResponseEntity<>(questionRequest, HttpStatus.CREATED);
 	}
