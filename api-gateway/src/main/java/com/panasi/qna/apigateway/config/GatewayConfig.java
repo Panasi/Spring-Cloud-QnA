@@ -29,6 +29,7 @@ public class GatewayConfig {
 				.route("external answer", r -> r.path("/external/answers/**").filters(f -> f.filter(filter)).uri("lb://answer-service"))
 				.route("admin comment", r -> r.path("/admin/comments/**").filters(f -> f.filter(filter)).uri("lb://comment-service"))
 				.route("user comment", r -> r.path("/comments/**").filters(f -> f.filter(filter)).uri("lb://comment-service"))
+				.route("external comment", r -> r.path("/external/comments/**").filters(f -> f.filter(filter)).uri("lb://comment-service"))
 				.build();
 	}
 

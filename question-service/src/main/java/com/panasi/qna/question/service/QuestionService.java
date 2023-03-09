@@ -102,6 +102,19 @@ public class QuestionService {
 		return response.getBody();
 	}
 	
+	// Return question rating
+	public Double getRating(int questionId) {
+		String url = "http://localhost:8765/external/comments/question/rating/" + questionId;
+		ResponseEntity<Double> response = restTemplate.exchange(
+			url,
+			HttpMethod.GET,
+			null,
+			Double.class
+		);
+		Double rating = response.getBody();
+		return rating != null ? (Math.ceil(rating * 100) / 100) : null;
+	}
+	
 	// Return list of question id by category
 	public List<Integer> getAllQuestionIdByCategory(int categoryId) {
 		return questionRepository.findAllQuestionIdByCategory(categoryId);

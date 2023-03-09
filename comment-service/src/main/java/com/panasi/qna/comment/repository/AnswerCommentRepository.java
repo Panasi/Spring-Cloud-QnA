@@ -14,6 +14,6 @@ public interface AnswerCommentRepository extends JpaRepository<AnswerComment, In
 	public List<AnswerComment> findAllByAuthorId(int authorId);
 	
 	@Query("SELECT AVG(rate) FROM AnswerComment c WHERE c.answerId = ?1")
-	public double getRating(int answerId);
+	public Double getRating(int answerId);
 	
 }

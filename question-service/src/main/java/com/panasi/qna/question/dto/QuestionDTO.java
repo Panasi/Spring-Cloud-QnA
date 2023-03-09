@@ -19,5 +19,6 @@ public class QuestionDTO {
 	private String content;
 	private Integer authorId;
 	private LocalDateTime date;
+	private Double rating;
 
 }

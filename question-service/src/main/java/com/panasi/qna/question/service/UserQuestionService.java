@@ -30,7 +30,9 @@ public class UserQuestionService extends QuestionService {
 		} else {
 			questions = questionRepository.findAllPublicAndAuthorPrivateByCategoryId(categoryId, currentUserId);
 		}
-		return questionMapper.toQuestionDTOs(questions);
+		List<QuestionDTO> questionsDTO = questionMapper.toQuestionDTOs(questions);
+	    questionsDTO.forEach(questionDTO -> questionDTO.setRating(getRating(questionDTO.getId())));
+	    return questionsDTO;
 	}
 		
 	// Return questions from certain category and all its subcategories
@@ -64,7 +66,9 @@ public class UserQuestionService extends QuestionService {
 	        questions = questionRepository.findAllByAuthorId(authorId);
 	    }
 
-	    return questionMapper.toQuestionDTOs(questions); 
+	    List<QuestionDTO> questionsDTO = questionMapper.toQuestionDTOs(questions);
+	    questionsDTO.forEach(questionDTO -> questionDTO.setRating(getRating(questionDTO.getId())));
+	    return questionsDTO; 
 	}
 	
 	// Return question by id
@@ -80,6 +84,7 @@ public class UserQuestionService extends QuestionService {
 			throw new ForbiddenException("You can't get another private question");
 		}
 		QuestionWithAnswersDTO questionDTO = fullQuestionMapper.toFullQuestionDTO(question);
+		questionDTO.setRating(getRating(questionDTO.getId()));
 		List<AnswerDTO> answers = getAnswersByQuestionAndAuthor(questionId, currentUserId);
 		questionDTO.setAnswers(answers);
 		return questionDTO;

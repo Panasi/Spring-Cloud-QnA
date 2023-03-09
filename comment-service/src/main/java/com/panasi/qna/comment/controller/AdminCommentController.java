@@ -33,7 +33,6 @@ public class AdminCommentController {
 	
 	private final AdminCommentService service;
 	
-	
 	@GetMapping("/question/{questionId}/all")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get all comments to the question")

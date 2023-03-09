@@ -24,7 +24,9 @@ public class AdminAnswerService extends AnswerService {
 		} else {
 			answers = answerRepository.findAll();
 		}
-		return answerMapper.toAnswerDTOs(answers);
+		List<AnswerDTO> answersDTO = answerMapper.toAnswerDTOs(answers);
+		answersDTO.forEach(answerDTO -> answerDTO.setRating(getRating(answerDTO.getId())));
+		return answersDTO;
 	}
 	
 	// Return all user answers
@@ -37,14 +39,18 @@ public class AdminAnswerService extends AnswerService {
 		} else {
 			answers = answerRepository.findAllByAuthorId(authorId);
 		}
-		return answerMapper.toAnswerDTOs(answers);
+		List<AnswerDTO> answersDTO = answerMapper.toAnswerDTOs(answers);
+		answersDTO.forEach(answerDTO -> answerDTO.setRating(getRating(answerDTO.getId())));
+		return answersDTO;
 	}
 	
 	// Return answer by id
 	public AnswerDTO getAnswerById(int answerId) throws NotFoundException {
 		Answer answer = answerRepository.findById(answerId)
 				.orElseThrow(NotFoundException::new);
-		return answerMapper.toAnswerDTO(answer);
+		AnswerDTO answerDTO = answerMapper.toAnswerDTO(answer);
+		answerDTO.setRating(getRating(answerDTO.getId()));
+		return answerDTO;
 	}
 	
 	// Update certain answer

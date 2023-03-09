@@ -26,7 +26,9 @@ public class AdminQuestionService extends QuestionService {
 	    } else {
 	        questions = questionRepository.findAll();
 	    }
-	    return questionMapper.toQuestionDTOs(questions); 
+	    List<QuestionDTO> questionsDTO = questionMapper.toQuestionDTOs(questions);
+	    questionsDTO.forEach(questionDTO -> questionDTO.setRating(getRating(questionDTO.getId())));
+	    return questionsDTO;
 	}
 	
 	// Return questions from certain category
@@ -39,7 +41,9 @@ public class AdminQuestionService extends QuestionService {
 	    } else {
 	        questions = questionRepository.findAllByCategoryId(categoryId);
 	    }
-		return questionMapper.toQuestionDTOs(questions);
+		List<QuestionDTO> questionsDTO = questionMapper.toQuestionDTOs(questions);
+	    questionsDTO.forEach(questionDTO -> questionDTO.setRating(getRating(questionDTO.getId())));
+	    return questionsDTO;
 	}
 	
 	// Return questions from certain category and all its subcategories
@@ -66,7 +70,9 @@ public class AdminQuestionService extends QuestionService {
 	    } else {
 	        questions = questionRepository.findAllByAuthorId(authorId);
 	    }
-	    return questionMapper.toQuestionDTOs(questions);
+	    List<QuestionDTO> questionsDTO = questionMapper.toQuestionDTOs(questions);
+	    questionsDTO.forEach(questionDTO -> questionDTO.setRating(getRating(questionDTO.getId())));
+	    return questionsDTO;
 	}
 	
 	// Return question by id
@@ -74,6 +80,7 @@ public class AdminQuestionService extends QuestionService {
 		Question question = questionRepository.findById(questionId)
 				.orElseThrow(NotFoundException::new);
 		QuestionWithAnswersDTO questionDTO = fullQuestionMapper.toFullQuestionDTO(question);
+		questionDTO.setRating(getRating(questionDTO.getId()));
 		List<AnswerDTO> answers = getAnswersByQuestion(questionId);
 		questionDTO.setAnswers(answers);
 		return questionDTO;

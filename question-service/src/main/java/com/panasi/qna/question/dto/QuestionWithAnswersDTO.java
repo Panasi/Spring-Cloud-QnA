@@ -20,6 +20,7 @@ public class QuestionWithAnswersDTO {
 	private String content;
 	private Integer authorId;
 	private LocalDateTime date;
+	private Double rating;
 	private List<AnswerDTO> answers; 
 
 }

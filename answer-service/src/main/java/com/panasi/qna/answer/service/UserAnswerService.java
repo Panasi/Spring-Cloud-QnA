@@ -34,7 +34,9 @@ public class UserAnswerService extends AnswerService {
 	    	answers = answerRepository.findAllByAuthorId(authorId);
 	    }
 	    
-		return answerMapper.toAnswerDTOs(answers);
+	    List<AnswerDTO> answersDTO = answerMapper.toAnswerDTOs(answers);
+		answersDTO.forEach(answerDTO -> answerDTO.setRating(getRating(answerDTO.getId())));
+		return answersDTO;
 	}
 	
 	// Return answer by id
@@ -50,7 +52,9 @@ public class UserAnswerService extends AnswerService {
 			throw new ForbiddenException("You can't get another private answer");
 		}
 		
-		return answerMapper.toAnswerDTO(answer);
+		AnswerDTO answerDTO = answerMapper.toAnswerDTO(answer);
+		answerDTO.setRating(getRating(answerDTO.getId()));
+		return answerDTO;
 	}
 	
 	// Update certain answer

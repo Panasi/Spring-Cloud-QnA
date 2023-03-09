@@ -16,7 +16,6 @@ import com.panasi.qna.comment.mapper.QuestionCommentMapper;
 import com.panasi.qna.comment.repository.AnswerCommentRepository;
 import com.panasi.qna.comment.repository.QuestionCommentRepository;
 
-
 @Service
 public class CommentService {
 	
@@ -92,18 +91,6 @@ public class CommentService {
 		return response.getBody();
 	}
 	
-	// Return question authorId value by question id
-	public int getQuestionAuthorId(int questionId) {
-		String url = "http://localhost:8765/external/questions/authorId/" + questionId;
-		ResponseEntity<Integer> response = restTemplate.exchange(
-			url,
-			HttpMethod.GET,
-			null,
-			Integer.class
-		);
-		return response.getBody();
-	}
-		
 	// Return answer isPrivate value by answer id
 	public boolean getAnswerIsPrivate(int answerId) {
 		String url = "http://localhost:8765/external/answers/isPrivate/" + answerId;
@@ -117,6 +104,18 @@ public class CommentService {
 	}
 	
 	// Return question authorId value by question id
+	public int getQuestionAuthorId(int questionId) {
+		String url = "http://localhost:8765/external/questions/authorId/" + questionId;
+		ResponseEntity<Integer> response = restTemplate.exchange(
+			url,
+			HttpMethod.GET,
+			null,
+			Integer.class
+		);
+		return response.getBody();
+	}
+	
+	// Return answer authorId value by answer id
 	public int getAnswerAuthorId(int answerId) {
 		String url = "http://localhost:8765/external/answers/authorId/" + answerId;
 		ResponseEntity<Integer> response = restTemplate.exchange(
@@ -126,6 +125,18 @@ public class CommentService {
 			Integer.class
 		);
 		return response.getBody();
+	}
+	
+	// Return question rating
+	public Double getQuestionRating(int questionId) {
+		Double rating = questionCommentRepository.getRating(questionId);
+	    return rating != null ? rating : null;
+	}
+	
+	// Return answer rating
+	public Double getAnswerRating(int answerId) {
+		Double rating = answerCommentRepository.getRating(answerId);
+		return rating != null ? rating : null;
 	}
 
 }

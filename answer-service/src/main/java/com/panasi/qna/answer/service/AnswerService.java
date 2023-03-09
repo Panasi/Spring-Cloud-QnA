@@ -51,14 +51,18 @@ public class AnswerService {
 	
 	// Return all answers by question
 	public List<AnswerDTO> getAnswersByQuestion(int questionId) {
-		List<Answer> answerDTOs = answerRepository.findAllByQuestionId(questionId);
-		return answerMapper.toAnswerDTOs(answerDTOs);
+		List<Answer> answers = answerRepository.findAllByQuestionId(questionId);
+		List<AnswerDTO> answersDTO = answerMapper.toAnswerDTOs(answers);
+		answersDTO.forEach(answerDTO -> answerDTO.setRating(getRating(answerDTO.getId())));
+		return answersDTO;
 	}
 	
 	// Return all answers by question and author
 	public List<AnswerDTO> getAnswersByQuestionAndAuthor(int questionId, int authorId) {
-		List<Answer> answerDTOs = answerRepository.findAllByQuestionIdandAuthorId(questionId, authorId);
-		return answerMapper.toAnswerDTOs(answerDTOs);
+		List<Answer> answers = answerRepository.findAllByQuestionIdandAuthorId(questionId, authorId);
+		List<AnswerDTO> answersDTO = answerMapper.toAnswerDTOs(answers);
+		answersDTO.forEach(answerDTO -> answerDTO.setRating(getRating(answerDTO.getId())));
+		return answersDTO;
 	}
 	
 	// Return is question exists
@@ -71,6 +75,19 @@ public class AnswerService {
 			Boolean.class
 		);
 		return response.getBody();
+	}
+	
+	// Return answer rating
+	public Double getRating(int answerId) {
+		String url = "http://localhost:8765/external/comments/answer/rating/" + answerId;
+		ResponseEntity<Double> response = restTemplate.exchange(
+			url,
+			HttpMethod.GET,
+			null,
+			Double.class
+		);
+		Double rating = response.getBody();
+		return rating != null ? (Math.ceil(rating * 100) / 100) : null;
 	}
 	
 	// Return is answer exists

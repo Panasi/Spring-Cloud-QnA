@@ -32,7 +32,6 @@ public class UserCommentController {
 	
 	private final UserCommentService service;
 	
-	
 	@GetMapping("/question/{questionId}/all")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Get all comments to the question")
