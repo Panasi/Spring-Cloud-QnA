@@ -39,6 +39,13 @@ public class UserAnswerController {
 		return new ResponseEntity<>(allAnswerDTOs, HttpStatus.OK);
 	}
 	
+	@GetMapping("/{id}")
+	@Operation(summary = "Get answer by id")
+	public ResponseEntity<AnswerDTO> showAnswerById(@PathVariable int id) throws NotFoundException, ForbiddenException {
+		AnswerDTO answerDTO = service.getAnswerById(id);
+		return new ResponseEntity<>(answerDTO, HttpStatus.OK);
+	}
+	
 	@PostMapping()
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Add a new answer")

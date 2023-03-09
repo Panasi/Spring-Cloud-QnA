@@ -37,6 +37,22 @@ public class UserAnswerService extends AnswerService {
 		return answerMapper.toAnswerDTOs(answers);
 	}
 	
+	// Return answer by id
+	public AnswerDTO getAnswerById(int answerId) throws NotFoundException, ForbiddenException {
+		Answer answer = answerRepository.findById(answerId)
+				.orElseThrow(NotFoundException::new);
+		
+		boolean isAnswerPrivate = answer.getIsPrivate();
+		int answerAuthorId = answer.getAuthorId();
+		int currentUserId = Utils.getCurrentUserId();
+		
+		if (isAnswerPrivate && answerAuthorId != currentUserId) {
+			throw new ForbiddenException("You can't get another private answer");
+		}
+		
+		return answerMapper.toAnswerDTO(answer);
+	}
+	
 	// Update certain answer
 	public void updateAnswer(AnswerRequest answerRequest, int answerId) throws NotFoundException, ForbiddenException {
 		int currentUserId = Utils.getCurrentUserId();
@@ -44,7 +60,7 @@ public class UserAnswerService extends AnswerService {
 				.orElseThrow(NotFoundException::new);
 		
 		if (answer.getAuthorId() != currentUserId) {
-	    	throw new ForbiddenException("You can't update other users answers");
+	    	throw new ForbiddenException("You can't update another users answers");
 	    }
 		
 		LocalDateTime dateTime = LocalDateTime.now();

@@ -49,6 +49,14 @@ public class AdminAnswerController {
 		return new ResponseEntity<>(allAnswerDTOs, HttpStatus.OK);
 	}
 	
+	@GetMapping("/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	@Operation(summary = "Get answer by id")
+	public ResponseEntity<AnswerDTO> showAnswerById(@PathVariable int id) throws NotFoundException {
+		AnswerDTO answerDTO = service.getAnswerById(id);
+		return new ResponseEntity<>(answerDTO, HttpStatus.OK);
+	}
+	
 	@PostMapping()
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Add a new answer")

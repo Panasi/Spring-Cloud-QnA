@@ -40,6 +40,13 @@ public class AdminAnswerService extends AnswerService {
 		return answerMapper.toAnswerDTOs(answers);
 	}
 	
+	// Return answer by id
+	public AnswerDTO getAnswerById(int answerId) throws NotFoundException {
+		Answer answer = answerRepository.findById(answerId)
+				.orElseThrow(NotFoundException::new);
+		return answerMapper.toAnswerDTO(answer);
+	}
+	
 	// Update certain answer
 	public void updateAnswer(AnswerRequest answerRequest, int answerId) throws NotFoundException {
 		Answer answer = answerRepository.findById(answerId)
