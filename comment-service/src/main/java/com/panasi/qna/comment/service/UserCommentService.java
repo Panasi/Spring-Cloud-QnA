@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.panasi.qna.comment.dto.AnswerCommentDTO;
 import com.panasi.qna.comment.dto.QuestionCommentDTO;
@@ -146,6 +147,7 @@ public class UserCommentService extends CommentService {
 	}
 	
 	// Update question comment
+	@Transactional
 	public void updateQuestionComment(CommentRequest commentRequest, int commentId) throws NotFoundException, ForbiddenException {
 		QuestionComment comment = questionCommentRepository.findById(commentId)
 				.orElseThrow(NotFoundException::new);
@@ -168,6 +170,7 @@ public class UserCommentService extends CommentService {
 	}
 	
 	// Update answer comment
+	@Transactional
 	public void updateAnswerComment(CommentRequest commentRequest, int commentId) throws NotFoundException, ForbiddenException {
 		AnswerComment comment = answerCommentRepository.findById(commentId)
 				.orElseThrow(NotFoundException::new);

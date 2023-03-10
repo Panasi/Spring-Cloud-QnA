@@ -2,6 +2,7 @@ package com.panasi.qna.question.controller;
 
 import java.util.List;
 
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,13 +36,13 @@ public class ExternalQuestionController {
 	
 	@GetMapping("/isPrivate/{id}")
 	@Operation(summary = "Get question isPrivate by question id")
-	public boolean getQuestionIsPrivate(@PathVariable int id) {
+	public boolean getQuestionIsPrivate(@PathVariable int id) throws NotFoundException {
 		return questionService.getQuestionIsPrivate(id);
 	}
 	
 	@GetMapping("/authorId/{id}")
 	@Operation(summary = "Get question authorId by question id")
-	public boolean getQuestionAuthorId(@PathVariable int id) {
+	public boolean getQuestionAuthorId(@PathVariable int id) throws NotFoundException {
 		return questionService.getQuestionIsPrivate(id);
 	}
 

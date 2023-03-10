@@ -30,8 +30,4 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
 	@Query("SELECT q.id FROM Question q WHERE q.categoryId = ?1")
 	public List<Integer> findAllQuestionIdByCategory(int categoryId);
 	
-	public boolean findIsPrivateById(int id);
-	
-	public int findAuthorIdById(int id);
-	
 }

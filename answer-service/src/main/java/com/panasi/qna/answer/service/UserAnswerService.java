@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.panasi.qna.answer.dto.AnswerDTO;
 import com.panasi.qna.answer.entity.Answer;
@@ -36,7 +37,7 @@ public class UserAnswerService extends AnswerService {
 	    
 	    List<AnswerDTO> answersDTO = answerMapper.toAnswerDTOs(answers);
 		answersDTO.forEach(answerDTO -> answerDTO.setRating(getRating(answerDTO.getId())));
-		return answersDTO;
+		return sortAnswersDTO(answersDTO);
 	}
 	
 	// Return answer by id
@@ -58,6 +59,7 @@ public class UserAnswerService extends AnswerService {
 	}
 	
 	// Update certain answer
+	@Transactional
 	public void updateAnswer(AnswerRequest answerRequest, int answerId) throws NotFoundException, ForbiddenException {
 		int currentUserId = Utils.getCurrentUserId();
 		Answer answer = answerRepository.findById(answerId)

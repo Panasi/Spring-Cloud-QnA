@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.panasi.qna.question.dto.AnswerDTO;
 import com.panasi.qna.question.dto.QuestionDTO;
@@ -32,7 +33,7 @@ public class UserQuestionService extends QuestionService {
 		}
 		List<QuestionDTO> questionsDTO = questionMapper.toQuestionDTOs(questions);
 	    questionsDTO.forEach(questionDTO -> questionDTO.setRating(getRating(questionDTO.getId())));
-	    return questionsDTO;
+	    return sortQuestionsDTO(questionsDTO);
 	}
 		
 	// Return questions from certain category and all its subcategories
@@ -68,7 +69,7 @@ public class UserQuestionService extends QuestionService {
 
 	    List<QuestionDTO> questionsDTO = questionMapper.toQuestionDTOs(questions);
 	    questionsDTO.forEach(questionDTO -> questionDTO.setRating(getRating(questionDTO.getId())));
-	    return questionsDTO; 
+	    return sortQuestionsDTO(questionsDTO); 
 	}
 	
 	// Return question by id
@@ -91,6 +92,7 @@ public class UserQuestionService extends QuestionService {
 	}
 		
 	// Update certain question
+	@Transactional
 	public void updateQuestion(QuestionRequest questionRequest, int questionId) throws NotFoundException, ForbiddenException {
 	    int currentUserId = Utils.getCurrentUserId();
 	    Question question = questionRepository.findById(questionId)

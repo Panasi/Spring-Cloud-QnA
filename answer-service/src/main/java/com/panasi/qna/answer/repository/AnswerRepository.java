@@ -21,8 +21,4 @@ public interface AnswerRepository extends JpaRepository<Answer, Integer> {
 	@Query("SELECT a FROM Answer a WHERE (a.questionId = ?1 AND a.isPrivate = false) OR (a.questionId = ?1 AND a.isPrivate = true AND a.authorId = ?2)")
 	public List<Answer> findAllByQuestionIdandAuthorId(int questionId, int authorId);
 	
-	public boolean findIsPrivateById(int id);
-	
-	public int findAuthorIdById(int id);
-	
 }
