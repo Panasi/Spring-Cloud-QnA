@@ -14,9 +14,9 @@ import io.jsonwebtoken.UnsupportedJwtException;
 
 @Component
 public class JwtUtils {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
-	
+
 	@Value("${auth.jwtSecret}")
 	private String jwtSecret;
 
@@ -42,7 +42,7 @@ public class JwtUtils {
 		}
 		return false;
 	}
-	
+
 	private String parseJwt(String authHeader) {
 		if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
 			return authHeader.substring(7, authHeader.length());

@@ -21,36 +21,35 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/external/answers")
 public class ExternalAnswerController {
-	
+
 	private final AnswerService answerService;
-	
+
 	@GetMapping("/exists/{id}")
 	@Operation(summary = "Is answer exists")
 	public boolean isAnswerExists(@PathVariable int id) {
 		return answerService.isAnswerExists(id);
 	}
-	
+
 	@GetMapping("/isPrivate/{id}")
 	@Operation(summary = "Get answer isPrivate by answer id")
 	public boolean getAnswerIsPrivate(@PathVariable int id) throws NotFoundException {
 		return answerService.getAnswerIsPrivate(id);
 	}
-	
+
 	@GetMapping("/authorId/{id}")
 	@Operation(summary = "Get answer authorId by answer id")
 	public int getAnswerAuthorId(@PathVariable int id) throws NotFoundException {
 		return answerService.getAnswerAuthorId(id);
 	}
-	
+
 	@GetMapping("/question")
 	@Operation(summary = "Get list of answers by question")
-	public List<AnswerDTO> getAnswersByQuestion(
-			@RequestParam int questionId,
+	public List<AnswerDTO> getAnswersByQuestion(@RequestParam int questionId,
 			@RequestParam(required = false) Integer authorId) {
-	    if (authorId == null) {
-	        return answerService.getAnswersByQuestion(questionId);
-	    }
-	    return answerService.getAnswersByQuestionAndAuthor(questionId, authorId);
+		if (authorId == null) {
+			return answerService.getAnswersByQuestion(questionId);
+		}
+		return answerService.getAnswersByQuestionAndAuthor(questionId, authorId);
 	}
 
 }

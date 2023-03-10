@@ -30,9 +30,9 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/admin/categories")
 public class AdminCategoryController {
-	
+
 	private final CategoryService categoryService;
-	
+
 	@GetMapping
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get all categories")
@@ -40,7 +40,7 @@ public class AdminCategoryController {
 		List<CategoryDTO> allCategoryDtos = categoryService.getAllCategories();
 		return new ResponseEntity<>(allCategoryDtos, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/{id}/subcategories")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get all subcategories")
@@ -48,7 +48,7 @@ public class AdminCategoryController {
 		List<CategoryDTO> allCategoryDtos = categoryService.getAllSubcategories(id);
 		return new ResponseEntity<>(allCategoryDtos, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get a category by id")
@@ -56,7 +56,7 @@ public class AdminCategoryController {
 		CategoryDTO categoryDto = categoryService.getCategoryById(id);
 		return new ResponseEntity<>(categoryDto, HttpStatus.OK);
 	}
-	
+
 	@PostMapping
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Add a new category")
@@ -64,22 +64,21 @@ public class AdminCategoryController {
 		categoryService.createCategory(categoryRequest);
 		return new ResponseEntity<>(categoryRequest, HttpStatus.CREATED);
 	}
-	
+
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Update category")
-	public ResponseEntity<CategoryRequest> updateCategory(
-			@RequestBody CategoryRequest categoryRequest,
+	public ResponseEntity<CategoryRequest> updateCategory(@RequestBody CategoryRequest categoryRequest,
 			@PathVariable int id) throws NotFoundException {
 		categoryService.updateCategory(categoryRequest, id);
 		return new ResponseEntity<>(categoryRequest, HttpStatus.ACCEPTED);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Delete category and all subcategories")
-	public ResponseEntity<MessageResponse> deleteCategory(
-			@PathVariable int id) throws NotFoundException, CategoryIsNotEmptyException {
+	public ResponseEntity<MessageResponse> deleteCategory(@PathVariable int id)
+			throws NotFoundException, CategoryIsNotEmptyException {
 		categoryService.deleteCategory(id);
 		String message = "Category " + id + " and all its subcategories are deleted";
 		return new ResponseEntity<>(new MessageResponse(message), HttpStatus.OK);

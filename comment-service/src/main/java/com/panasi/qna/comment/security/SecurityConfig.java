@@ -11,17 +11,17 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-	
+
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http, AuthTokenFilter authTokenFilter) throws Exception {
-	    http.httpBasic().disable().csrf().disable().cors().disable()
-	        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-	        .authorizeRequests()
-	        .anyRequest().permitAll();
-	    
-	    http.addFilterBefore(authTokenFilter, BasicAuthenticationFilter.class);
-	    
-	    return http.build();
+		http.httpBasic().disable().csrf().disable().cors().disable().sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				.and().authorizeRequests().anyRequest()
+				.permitAll();
+
+		http.addFilterBefore(authTokenFilter, BasicAuthenticationFilter.class);
+
+		return http.build();
 	}
 
 }

@@ -19,15 +19,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class Category {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
-	
+
 	@Column(name = "parent_id")
 	private Integer parentId;
-	
+
 	@Column(name = "name", nullable = false)
 	private String name;
 

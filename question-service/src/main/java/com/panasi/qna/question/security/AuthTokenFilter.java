@@ -24,34 +24,35 @@ import io.jsonwebtoken.Jwts;
 
 @Service
 public class AuthTokenFilter extends OncePerRequestFilter {
-	
+
 	@Value("${auth.jwtSecret}")
 	private String jwtSecret;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		
-			String jwt = parseJwt(request);
-			
-			if (jwt != null) {
-				Integer userId = Integer.valueOf(Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody().getId());
-				String username = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody().getSubject();
-				Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody();
-				@SuppressWarnings("unchecked")
-				List<String> roles = (List<String>) claims.get("roles");
-				Set<String> hashSet = new HashSet<>(roles);
-				
-				User user = new User(userId, username, hashSet);
-				UserDetails userDetails = UserDetailsImpl.build(user);
 
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-				        userDetails, null, userDetails.getAuthorities());
-				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+		String jwt = parseJwt(request);
 
-				SecurityContextHolder.getContext().setAuthentication(authentication);
-			}
-			filterChain.doFilter(request, response);
+		if (jwt != null) {
+			Integer userId = Integer
+					.valueOf(Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody().getId());
+			String username = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody().getSubject();
+			Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody();
+			@SuppressWarnings("unchecked")
+			List<String> roles = (List<String>) claims.get("roles");
+			Set<String> hashSet = new HashSet<>(roles);
+
+			User user = new User(userId, username, hashSet);
+			UserDetails userDetails = UserDetailsImpl.build(user);
+
+			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
+					null, userDetails.getAuthorities());
+			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+		}
+		filterChain.doFilter(request, response);
 	}
 
 	private String parseJwt(HttpServletRequest request) {

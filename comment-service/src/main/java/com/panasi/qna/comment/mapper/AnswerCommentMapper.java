@@ -9,9 +9,11 @@ import com.panasi.qna.comment.entity.AnswerComment;
 
 @Mapper(componentModel = "spring")
 public interface AnswerCommentMapper {
-	
+
 	AnswerCommentDTO toCommentDTO(AnswerComment comment);
+
 	List<AnswerCommentDTO> toCommentDTOs(List<AnswerComment> comments);
+
 	AnswerComment toComment(AnswerCommentDTO commentDTO);
 
 }

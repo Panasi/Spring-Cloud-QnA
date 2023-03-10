@@ -25,32 +25,29 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class User {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
-	
+
 	@Column(name = "username", nullable = false)
 	private String username;
-	
+
 	@Column(name = "email", nullable = false)
 	private String email;
-	
+
 	@Column(name = "password", nullable = false)
 	private String password;
-	
+
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "user_roles", 
-			   joinColumns = @JoinColumn(name = "user_id"), 
-			   inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles;
-	
-	
+
 	public User(String username, String email, String password) {
-	    this.username = username;
-	    this.email = email;
-	    this.password = password;
+		this.username = username;
+		this.email = email;
+		this.password = password;
 	}
 
 }

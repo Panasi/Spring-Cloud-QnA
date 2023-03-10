@@ -23,43 +23,39 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
-	
+
 	private final CategoryRepository categoryRepository;
 	private final CategoryMapper categoryMapper;
 	private final RestTemplate restTemplate = new RestTemplate();
-	
+
 	// Return list of all categories
 	public List<CategoryDTO> getAllCategories() {
 		return categoryMapper.toCategoryDTOs(categoryRepository.findAll());
 	}
-		
+
 	// Return list of subcategories of certain category
 	public List<CategoryDTO> getAllSubcategories(int parentId) {
 		return categoryMapper.toCategoryDTOs(categoryRepository.findAllByParentId(parentId));
 	}
-		
+
 	// Return category by id
 	public CategoryDTO getCategoryById(int categoryId) throws NotFoundException {
-		Category category = categoryRepository.findById(categoryId)
-	            .orElseThrow(NotFoundException::new);
-	    return categoryMapper.toCategoryDTO(category);
+		Category category = categoryRepository.findById(categoryId).orElseThrow(NotFoundException::new);
+		return categoryMapper.toCategoryDTO(category);
 	}
-		
+
 	// Add a new category
 	public void createCategory(CategoryRequest categoryRequest) {
-		CategoryDTO categoryDTO = CategoryDTO.builder()
-			.name(categoryRequest.getName())
-			.parentId(categoryRequest.getParentId())
-			.build();
+		CategoryDTO categoryDTO = CategoryDTO.builder().name(categoryRequest.getName())
+				.parentId(categoryRequest.getParentId()).build();
 		Category category = categoryMapper.toCategory(categoryDTO);
 		categoryRepository.save(category);
 	}
-		
+
 	// Update certain category
 	@Transactional
 	public void updateCategory(CategoryRequest categoryRequest, int categoryId) throws NotFoundException {
-		Category category = categoryRepository.findById(categoryId)
-	            .orElseThrow(NotFoundException::new);
+		Category category = categoryRepository.findById(categoryId).orElseThrow(NotFoundException::new);
 		if (Objects.nonNull(categoryRequest.getName())) {
 			category.setName(categoryRequest.getName());
 		}
@@ -68,46 +64,41 @@ public class CategoryService {
 		}
 		categoryRepository.save(category);
 	}
-		
+
 	// Delete certain category
 	@Transactional
 	public void deleteCategory(int categoryId) throws NotFoundException, CategoryIsNotEmptyException {
-	    Category category = categoryRepository.findById(categoryId)
-	            .orElseThrow(NotFoundException::new);
+		Category category = categoryRepository.findById(categoryId).orElseThrow(NotFoundException::new);
 
-	    List<Category> subcategories = categoryRepository.findAllByParentId(categoryId);
-	    for (Category subcategory : subcategories) {
-	        deleteCategory(subcategory.getId());
-	    }
+		List<Category> subcategories = categoryRepository.findAllByParentId(categoryId);
+		for (Category subcategory : subcategories) {
+			deleteCategory(subcategory.getId());
+		}
 
-	    List<Integer> categoryQuestionIds = getAllQuestionIdFromCategory(categoryId);
-	    if (!categoryQuestionIds.isEmpty()) {
-	    	throw new CategoryIsNotEmptyException("Category or subcategory is not empty");
-	    }
-	    categoryRepository.delete(category);
+		List<Integer> categoryQuestionIds = getAllQuestionIdFromCategory(categoryId);
+		if (!categoryQuestionIds.isEmpty()) {
+			throw new CategoryIsNotEmptyException("Category or subcategory is not empty");
+		}
+		categoryRepository.delete(category);
 	}
-	
+
 	// Return list of question id from category
 	public List<Integer> getAllQuestionIdFromCategory(int categoryId) {
-	    String url = "http://localhost:8765/external/questions/categoryId/" + categoryId;
-	    ResponseEntity<List<Integer>> response = restTemplate.exchange(
-	      url,
-	      HttpMethod.GET,
-	      null,
-	      new ParameterizedTypeReference<List<Integer>>() {}
-	    );
-	    return response.getBody();
+		String url = "http://localhost:8765/external/questions/categoryId/" + categoryId;
+		ResponseEntity<List<Integer>> response = restTemplate.exchange(url, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<Integer>>() {
+				});
+		return response.getBody();
 	}
-	
+
 	// Return list of subcategory id
 	public List<Integer> getAllSubcategoryId(int parentId) {
 		return categoryRepository.findAllCategoryIdByParentId(parentId);
 	}
-	
+
 	// Return is category exists
 	public boolean isCategoryExists(int categoryId) {
 		return categoryRepository.existsById(categoryId);
 	}
-	
 
 }

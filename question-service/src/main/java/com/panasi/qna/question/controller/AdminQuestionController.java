@@ -32,9 +32,9 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/admin/questions")
 public class AdminQuestionController {
-	
+
 	private final AdminQuestionService service;
-	
+
 	@GetMapping()
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get all questions")
@@ -42,71 +42,69 @@ public class AdminQuestionController {
 		List<QuestionDTO> allQuestionDtos = service.getAllQuestions(access);
 		return new ResponseEntity<>(allQuestionDtos, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/category/{categoryId}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get questions from certain category")
-	public ResponseEntity<List<QuestionDTO>> getQuestionsFromCategory(
-			@PathVariable int categoryId,
+	public ResponseEntity<List<QuestionDTO>> getQuestionsFromCategory(@PathVariable int categoryId,
 			@RequestParam(defaultValue = "all") String access) {
 		List<QuestionDTO> allQuestionDtos = service.getCategoryQuestions(categoryId, access);
 		return new ResponseEntity<>(allQuestionDtos, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/subcategory/{categoryId}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get questions from certain category and all its subcategories")
-	public ResponseEntity<List<QuestionDTO>> getQuestionsFromSubcategories(
-			@PathVariable int categoryId,
+	public ResponseEntity<List<QuestionDTO>> getQuestionsFromSubcategories(@PathVariable int categoryId,
 			@RequestParam(defaultValue = "all") String access) {
 		List<QuestionDTO> result = new ArrayList<>();
 		List<QuestionDTO> allSubQuestionDtos = service.getSubcategoriesQuestions(categoryId, access, result);
 		return new ResponseEntity<>(allSubQuestionDtos, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/user/{authorId}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get all user questions")
-	public ResponseEntity<List<QuestionDTO>> getAllUserQuestions(
-			@PathVariable int authorId,
+	public ResponseEntity<List<QuestionDTO>> getAllUserQuestions(@PathVariable int authorId,
 			@RequestParam(defaultValue = "all") String access) {
 		List<QuestionDTO> allQuestionDtos = service.getUserQuestions(authorId, access);
 		return new ResponseEntity<>(allQuestionDtos, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/{questionId}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Get question with answers by id")
-	public ResponseEntity<QuestionWithAnswersDTO> getQuestionById(@PathVariable int questionId) throws NotFoundException {
+	public ResponseEntity<QuestionWithAnswersDTO> getQuestionById(@PathVariable int questionId)
+			throws NotFoundException {
 		QuestionWithAnswersDTO questionDTO = service.getQuestionById(questionId);
 		return new ResponseEntity<>(questionDTO, HttpStatus.OK);
 	}
-	
+
 	@PostMapping
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Add a new question")
-	public ResponseEntity<QuestionRequest> addNewQuestion(@RequestBody QuestionRequest questionRequest) throws NotFoundException {
+	public ResponseEntity<QuestionRequest> addNewQuestion(@RequestBody QuestionRequest questionRequest)
+			throws NotFoundException {
 		service.createQuestion(questionRequest);
 		return new ResponseEntity<>(questionRequest, HttpStatus.CREATED);
 	}
-	
+
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Update question")
-	public ResponseEntity<QuestionRequest> updateQuestion(
-			@RequestBody QuestionRequest questionRequest,
+	public ResponseEntity<QuestionRequest> updateQuestion(@RequestBody QuestionRequest questionRequest,
 			@PathVariable int id) throws NotFoundException {
 		service.updateQuestion(questionRequest, id);
 		return new ResponseEntity<>(questionRequest, HttpStatus.ACCEPTED);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Delete question")
 	public ResponseEntity<MessageResponse> deleteQuestion(@PathVariable int id) {
-			service.deleteQuestion(id);
-			String message = "Question " + id + " is deleted";
-			return new ResponseEntity<>(new MessageResponse(message), HttpStatus.OK);
+		service.deleteQuestion(id);
+		String message = "Question " + id + " is deleted";
+		return new ResponseEntity<>(new MessageResponse(message), HttpStatus.OK);
 	}
 
 }

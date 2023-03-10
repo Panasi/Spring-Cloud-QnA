@@ -18,15 +18,15 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/external/categories")
 public class ExternalCategoryController {
-	
+
 	private final CategoryService categoryService;
-	
+
 	@GetMapping("/subcategoriesId/{id}")
 	@Operation(summary = "Get all subcategory id")
 	public List<Integer> getSubcategoryIds(@PathVariable int id) {
 		return categoryService.getAllSubcategoryId(id);
 	}
-	
+
 	@GetMapping("/exists/{id}")
 	@Operation(summary = "Is category exists")
 	public boolean isCategoryExists(@PathVariable int id) {

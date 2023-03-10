@@ -19,27 +19,27 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/external/questions")
 public class ExternalQuestionController {
-	
+
 	private final QuestionService questionService;
-	
+
 	@GetMapping("/categoryId/{id}")
 	@Operation(summary = "Get all question id from category")
 	public List<Integer> getQuestionsIdFromCategory(@PathVariable int id) {
 		return questionService.getAllQuestionIdByCategory(id);
 	}
-	
+
 	@GetMapping("/exists/{id}")
 	@Operation(summary = "Is question exists")
 	public boolean isQuestionExists(@PathVariable int id) {
 		return questionService.isQuestionExists(id);
 	}
-	
+
 	@GetMapping("/isPrivate/{id}")
 	@Operation(summary = "Get question isPrivate by question id")
 	public boolean getQuestionIsPrivate(@PathVariable int id) throws NotFoundException {
 		return questionService.getQuestionIsPrivate(id);
 	}
-	
+
 	@GetMapping("/authorId/{id}")
 	@Operation(summary = "Get question authorId by question id")
 	public boolean getQuestionAuthorId(@PathVariable int id) throws NotFoundException {

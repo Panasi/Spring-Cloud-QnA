@@ -52,6 +52,26 @@ public class QuestionService {
 		questionRepository.save(question);
 	}
 
+	// Sort questions
+	public List<QuestionDTO> sortQuestionsDTO(List<QuestionDTO> questionsDTO) {
+		List<QuestionDTO> sortedQuestionsDTO = new ArrayList<>(questionsDTO);
+		sortedQuestionsDTO.sort((q1, q2) -> {
+			int compare = q1.getCategoryId().compareTo(q2.getCategoryId());
+			if (compare == 0) {
+				compare = Boolean.compare(q1.getIsPrivate(), q2.getIsPrivate());
+				if (compare == 0) {
+					compare = Optional.ofNullable(q1.getRating()).orElse(Double.MIN_VALUE)
+							.compareTo(Optional.ofNullable(q2.getRating()).orElse(Double.MIN_VALUE));
+					if (compare == 0) {
+						compare = q1.getDate().compareTo(q2.getDate());
+					}
+				}
+			}
+			return compare;
+		});
+		return sortedQuestionsDTO;
+	}
+
 	// Return list of subcategory id
 	public List<Integer> getAllSubcategoryId(int parentId) {
 		String url = "http://localhost:8765/external/categories/subcategoriesId/" + parentId;
@@ -95,26 +115,6 @@ public class QuestionService {
 		return rating != null ? (Math.ceil(rating * 100) / 100) : null;
 	}
 
-	// Sort questions
-	public List<QuestionDTO> sortQuestionsDTO(List<QuestionDTO> questionsDTO) {
-		List<QuestionDTO> sortedQuestionsDTO = new ArrayList<>(questionsDTO);
-		sortedQuestionsDTO.sort((q1, q2) -> {
-			int compare = q1.getCategoryId().compareTo(q2.getCategoryId());
-			if (compare == 0) {
-				compare = Boolean.compare(q1.getIsPrivate(), q2.getIsPrivate());
-				if (compare == 0) {
-					compare = Optional.ofNullable(q1.getRating()).orElse(Double.MIN_VALUE)
-							.compareTo(Optional.ofNullable(q2.getRating()).orElse(Double.MIN_VALUE));
-					if (compare == 0) {
-						compare = q1.getDate().compareTo(q2.getDate());
-					}
-				}
-			}
-			return compare;
-		});
-		return sortedQuestionsDTO;
-	}
-
 	// Return list of question id by category
 	public List<Integer> getAllQuestionIdByCategory(int categoryId) {
 		return questionRepository.findAllQuestionIdByCategory(categoryId);
@@ -127,15 +127,13 @@ public class QuestionService {
 
 	// Return question isPrivate value by question id
 	public boolean getQuestionIsPrivate(int questionId) throws NotFoundException {
-		Question question = questionRepository.findById(questionId)
-				.orElseThrow(NotFoundException::new);
+		Question question = questionRepository.findById(questionId).orElseThrow(NotFoundException::new);
 		return question.getIsPrivate();
 	}
 
 	// Return question authorId value by question id
 	public int getQuestionAuthorId(int questionId) throws NotFoundException {
-		Question question = questionRepository.findById(questionId)
-				.orElseThrow(NotFoundException::new);
+		Question question = questionRepository.findById(questionId).orElseThrow(NotFoundException::new);
 		return question.getAuthorId();
 	}
 

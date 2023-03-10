@@ -16,15 +16,15 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/external/comments")
 public class ExternalCommentController {
-	
+
 	private final CommentService commentService;
-	
+
 	@GetMapping("/question/rating/{questionId}")
 	@Operation(summary = "Get question rating")
 	public Double getQuestionRating(@PathVariable int questionId) {
 		return commentService.getQuestionRating(questionId);
 	}
-	
+
 	@GetMapping("/answer/rating/{answerId}")
 	@Operation(summary = "Get answer rating")
 	public Double getAnswerRating(@PathVariable int answerId) {

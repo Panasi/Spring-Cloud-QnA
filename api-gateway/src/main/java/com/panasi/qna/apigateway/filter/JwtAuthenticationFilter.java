@@ -31,47 +31,45 @@ public class JwtAuthenticationFilter implements GatewayFilter {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-	    ServerHttpRequest request = exchange.getRequest();
-	    HttpMethod httpMethod = request.getMethod();
-	    String path = request.getPath().toString();
-	    
-	    boolean isSecuredEndpoint = isEndpointMatched(path, SECURED_API_ENDPOINTS);
-	    boolean isNotSecuredEndpoint = isEndpointMatched(path, NOTSECURED_API_ENDPOINTS);
+		ServerHttpRequest request = exchange.getRequest();
+		HttpMethod httpMethod = request.getMethod();
+		String path = request.getPath().toString();
 
-	    if (isSecuredEndpoint || (!HttpMethod.GET.equals(httpMethod) && !isNotSecuredEndpoint)) {
-	        String authToken = extractAuthHeader(request);
-	        if (authToken == null) {
-	            return handleUnauthorizedAccessAttempt(exchange, "Unauthorized");
-	        } else if (!jwtUtils.validateJwtToken(authToken)) {
-	            return handleUnauthorizedAccessAttempt(exchange, "Invalid token");
-	        }
-	    }
+		boolean isSecuredEndpoint = isEndpointMatched(path, SECURED_API_ENDPOINTS);
+		boolean isNotSecuredEndpoint = isEndpointMatched(path, NOTSECURED_API_ENDPOINTS);
 
-	    return chain.filter(exchange);
+		if (isSecuredEndpoint || (!HttpMethod.GET.equals(httpMethod) && !isNotSecuredEndpoint)) {
+			String authToken = extractAuthHeader(request);
+			if (authToken == null) {
+				return handleUnauthorizedAccessAttempt(exchange, "Unauthorized");
+			} else if (!jwtUtils.validateJwtToken(authToken)) {
+				return handleUnauthorizedAccessAttempt(exchange, "Invalid token");
+			}
+		}
+
+		return chain.filter(exchange);
 	}
 
 	private boolean isEndpointMatched(String path, List<String> endpoints) {
-	    return endpoints.stream()
-	            .anyMatch(path::contains);
+		return endpoints.stream().anyMatch(path::contains);
 	}
 
-    private String extractAuthHeader(ServerHttpRequest request) {
-        List<String> authHeaders = request.getHeaders().getOrDefault("Authorization", Collections.emptyList());
-        if (!authHeaders.isEmpty()) {
-            return  authHeaders.get(0);
-        }
-        return null;
-    }
+	private String extractAuthHeader(ServerHttpRequest request) {
+		List<String> authHeaders = request.getHeaders().getOrDefault("Authorization", Collections.emptyList());
+		if (!authHeaders.isEmpty()) {
+			return authHeaders.get(0);
+		}
+		return null;
+	}
 
-    private Mono<Void> handleUnauthorizedAccessAttempt(ServerWebExchange exchange, String message) {
-        ServerHttpResponse response = exchange.getResponse();
-        response.setStatusCode(HttpStatus.UNAUTHORIZED);
-        String responseBody = "Unauthorized access attempt: " + message;
-        response.getHeaders().add("Content-Type", "application/json");
-        byte[] bytes = responseBody.getBytes(StandardCharsets.UTF_8);
-        DataBuffer buffer = response.bufferFactory().wrap(bytes);
-        return response.writeWith(Mono.just(buffer))
-                .doOnError(error -> DataBufferUtils.release(buffer));
-    }
+	private Mono<Void> handleUnauthorizedAccessAttempt(ServerWebExchange exchange, String message) {
+		ServerHttpResponse response = exchange.getResponse();
+		response.setStatusCode(HttpStatus.UNAUTHORIZED);
+		String responseBody = "Unauthorized access attempt: " + message;
+		response.getHeaders().add("Content-Type", "application/json");
+		byte[] bytes = responseBody.getBytes(StandardCharsets.UTF_8);
+		DataBuffer buffer = response.bufferFactory().wrap(bytes);
+		return response.writeWith(Mono.just(buffer)).doOnError(error -> DataBufferUtils.release(buffer));
+	}
 
 }

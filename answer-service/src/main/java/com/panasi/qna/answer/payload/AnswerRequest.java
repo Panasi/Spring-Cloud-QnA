@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class AnswerRequest {
-	
+
 	private Integer questionId;
 	private Boolean isPrivate;
 	private String content;

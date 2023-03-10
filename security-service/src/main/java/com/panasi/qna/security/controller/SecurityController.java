@@ -22,24 +22,24 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/auth")
 public class SecurityController {
-	
+
 	private final AuthService authService;
-	
+
 	@PostMapping("/signin")
 	public ResponseEntity<JwtResponse> authenticateUser(@RequestBody SignInRequest signInRequest) {
-		
+
 		JwtResponse response = authService.singnInUser(signInRequest);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
+
 	@PostMapping("/signup")
-	public ResponseEntity<MessageResponse> registerUser(
-			@RequestBody SignUpRequest signUpRequest) throws DuplicateRegistrationException {
+	public ResponseEntity<MessageResponse> registerUser(@RequestBody SignUpRequest signUpRequest)
+			throws DuplicateRegistrationException {
 		authService.signUpUser(signUpRequest);
-		
+
 		String message = "You have successfully registered.";
 		return new ResponseEntity<>(new MessageResponse(message), HttpStatus.OK);
-		
+
 	}
 
 }

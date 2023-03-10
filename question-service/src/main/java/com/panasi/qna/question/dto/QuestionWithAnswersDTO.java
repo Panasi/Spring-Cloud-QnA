@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class QuestionWithAnswersDTO {
-	
+
 	private Integer id;
 	private Integer categoryId;
 	private Boolean isPrivate;
@@ -21,6 +21,6 @@ public class QuestionWithAnswersDTO {
 	private Integer authorId;
 	private LocalDateTime date;
 	private Double rating;
-	private List<AnswerDTO> answers; 
+	private List<AnswerDTO> answers;
 
 }

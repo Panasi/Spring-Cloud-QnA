@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class User {
-	
+
 	private Integer id;
 	private String username;
 	private Set<String> roles;

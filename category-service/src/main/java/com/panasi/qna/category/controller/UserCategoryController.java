@@ -22,23 +22,23 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/categories")
 public class UserCategoryController {
-	
+
 	private final CategoryService categoryService;
-	
+
 	@GetMapping
 	@Operation(summary = "Get all categories")
 	public ResponseEntity<List<CategoryDTO>> getAllCategories() {
 		List<CategoryDTO> allCategoryDtos = categoryService.getAllCategories();
 		return new ResponseEntity<>(allCategoryDtos, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/{id}/subcategories")
 	@Operation(summary = "Get all subcategories")
 	public ResponseEntity<List<CategoryDTO>> getSubcategories(@PathVariable int id) {
 		List<CategoryDTO> allCategoryDtos = categoryService.getAllSubcategories(id);
 		return new ResponseEntity<>(allCategoryDtos, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/{id}")
 	@Operation(summary = "Get a category by id")
 	public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable int id) throws NotFoundException {

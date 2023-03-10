@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class AnswerDTO {
-	
+
 	private Integer id;
 	private Integer questionId;
 	private Boolean isPrivate;

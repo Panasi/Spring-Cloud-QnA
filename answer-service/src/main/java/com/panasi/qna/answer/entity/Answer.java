@@ -21,24 +21,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class Answer {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
-	
+
 	@Column(name = "question_id", nullable = false)
 	private Integer questionId;
-	
+
 	@Column(name = "is_private")
 	private Boolean isPrivate;
-	
+
 	@Column(name = "content", nullable = false)
 	private String content;
-	
+
 	@Column(name = "user_id")
 	private Integer authorId;
-	
+
 	@Column(name = "date")
 	private LocalDateTime date;
 

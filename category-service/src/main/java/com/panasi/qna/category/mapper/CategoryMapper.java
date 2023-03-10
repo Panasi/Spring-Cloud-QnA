@@ -9,9 +9,11 @@ import com.panasi.qna.category.entity.Category;
 
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
-	
+
 	CategoryDTO toCategoryDTO(Category category);
+
 	List<CategoryDTO> toCategoryDTOs(List<Category> categories);
+
 	Category toCategory(CategoryDTO categoryDTO);
 
 }

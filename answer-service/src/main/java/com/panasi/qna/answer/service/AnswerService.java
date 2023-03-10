@@ -46,6 +46,26 @@ public class AnswerService {
 		Answer answer = answerMapper.toAnswer(answerDto);
 		answerRepository.save(answer);
 	}
+	
+	// Sort Answers
+		public List<AnswerDTO> sortAnswersDTO(List<AnswerDTO> answersDTO) {
+			List<AnswerDTO> sortedAnswersDTO = new ArrayList<>(answersDTO);
+			sortedAnswersDTO.sort((q1, q2) -> {
+				int compare = q1.getQuestionId().compareTo(q2.getQuestionId());
+				if (compare == 0) {
+					compare = Boolean.compare(q1.getIsPrivate(), q2.getIsPrivate());
+					if (compare == 0) {
+						compare = Optional.ofNullable(q1.getRating()).orElse(Double.MIN_VALUE)
+								.compareTo(Optional.ofNullable(q2.getRating()).orElse(Double.MIN_VALUE));
+						if (compare == 0) {
+							compare = q1.getDate().compareTo(q2.getDate());
+						}
+					}
+				}
+				return compare;
+			});
+			return sortedAnswersDTO;
+		}
 
 	// Return all answers by question
 	public List<AnswerDTO> getAnswersByQuestion(int questionId) {
@@ -95,26 +115,6 @@ public class AnswerService {
 		Answer answer = answerRepository.findById(answerId)
 				.orElseThrow(NotFoundException::new);
 		return answer.getAuthorId();
-	}
-
-	// Sort Answers
-	public List<AnswerDTO> sortAnswersDTO(List<AnswerDTO> answersDTO) {
-		List<AnswerDTO> sortedAnswersDTO = new ArrayList<>(answersDTO);
-		sortedAnswersDTO.sort((q1, q2) -> {
-			int compare = q1.getQuestionId().compareTo(q2.getQuestionId());
-			if (compare == 0) {
-				compare = Boolean.compare(q1.getIsPrivate(), q2.getIsPrivate());
-				if (compare == 0) {
-					compare = Optional.ofNullable(q1.getRating()).orElse(Double.MIN_VALUE)
-							.compareTo(Optional.ofNullable(q2.getRating()).orElse(Double.MIN_VALUE));
-					if (compare == 0) {
-						compare = q1.getDate().compareTo(q2.getDate());
-					}
-				}
-			}
-			return compare;
-		});
-		return sortedAnswersDTO;
 	}
 
 }

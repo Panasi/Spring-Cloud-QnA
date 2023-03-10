@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 @Builder
 public class AnswerCommentDTO {
-	
+
 	private Integer id;
 	private Integer answerId;
 	private String content;

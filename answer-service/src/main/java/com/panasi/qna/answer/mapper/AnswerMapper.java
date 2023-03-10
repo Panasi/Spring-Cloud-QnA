@@ -10,10 +10,12 @@ import com.panasi.qna.answer.entity.Answer;
 
 @Mapper(componentModel = "spring")
 public interface AnswerMapper {
-	
+
 	@Mapping(target = "rating", ignore = true)
 	AnswerDTO toAnswerDTO(Answer answer);
+
 	List<AnswerDTO> toAnswerDTOs(List<Answer> answers);
+
 	Answer toAnswer(AnswerDTO answerDTO);
 
 }
