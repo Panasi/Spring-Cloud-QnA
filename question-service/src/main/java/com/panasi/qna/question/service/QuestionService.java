@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.panasi.qna.question.dto.AnswerDTO;
 import com.panasi.qna.question.dto.QuestionDTO;
+import com.panasi.qna.question.dto.QuestionWithAnswersDTO;
 import com.panasi.qna.question.entity.Question;
 import com.panasi.qna.question.mapper.FullQuestionMapper;
 import com.panasi.qna.question.mapper.QuestionMapper;
@@ -72,6 +73,26 @@ public class QuestionService {
 		return sortedQuestionsDTO;
 	}
 
+	// Sort questions with answers
+	public List<QuestionWithAnswersDTO> sortQuestionsWithAnswersDTO(List<QuestionWithAnswersDTO> questionsDTO) {
+		List<QuestionWithAnswersDTO> sortedQuestionsDTO = new ArrayList<>(questionsDTO);
+		sortedQuestionsDTO.sort((q1, q2) -> {
+			int compare = q1.getCategoryId().compareTo(q2.getCategoryId());
+			if (compare == 0) {
+				compare = Boolean.compare(q1.getIsPrivate(), q2.getIsPrivate());
+				if (compare == 0) {
+					compare = Optional.ofNullable(q1.getRating()).orElse(Double.MIN_VALUE)
+							.compareTo(Optional.ofNullable(q2.getRating()).orElse(Double.MIN_VALUE));
+					if (compare == 0) {
+						compare = q1.getDate().compareTo(q2.getDate());
+					}
+				}
+			}
+			return compare;
+		});
+		return sortedQuestionsDTO;
+	}
+
 	// Return list of subcategory id
 	public List<Integer> getAllSubcategoryId(int parentId) {
 		String url = "http://localhost:8765/external/categories/subcategoriesId/" + parentId;
@@ -85,6 +106,13 @@ public class QuestionService {
 	public boolean isCategoryExists(int categoryId) {
 		String url = "http://localhost:8765/external/categories/exists/" + categoryId;
 		ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.GET, null, Boolean.class);
+		return response.getBody();
+	}
+	
+	// Return category name
+	public String getCategoryName(int categoryId) {
+		String url = "http://localhost:8765/external/categories/" + categoryId + "/name";
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
 		return response.getBody();
 	}
 

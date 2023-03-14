@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.panasi.qna.question.dto.QuestionDTO;
 import com.panasi.qna.question.dto.QuestionWithAnswersDTO;
+import com.panasi.qna.question.exception.DownloadException;
 import com.panasi.qna.question.exception.ForbiddenException;
 import com.panasi.qna.question.payload.QuestionRequest;
 import com.panasi.qna.question.service.UserQuestionService;
@@ -40,6 +43,32 @@ public class UserQuestionController {
 			@RequestParam(defaultValue = "all") String access) {
 		List<QuestionDTO> allQuestionDtos = service.getCategoryQuestions(categoryId, access);
 		return new ResponseEntity<>(allQuestionDtos, HttpStatus.OK);
+	}
+
+	@GetMapping("/download")
+	@Operation(summary = "Download PDF file for questions with answers")
+	public ResponseEntity<byte[]> downloadQuestions() throws DownloadException {
+		byte[] content = service.getQuestionsPDF();
+		HttpHeaders header = new HttpHeaders();
+		header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "Questions and Answers.pdf");
+		header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+		header.add("Pragma", "no-cache");
+		header.add("Expires", "0");
+		return ResponseEntity.ok().headers(header).contentLength(content.length)
+				.contentType(MediaType.parseMediaType("application/octet-stream")).body(content);
+	}
+	
+	@GetMapping("/category/{categoryId}/download")
+	@Operation(summary = "Download PDF file for questions with answers by category")
+	public ResponseEntity<byte[]> downloadQuestionsFromCategory(@PathVariable int categoryId) throws DownloadException {
+		byte[] content = service.getCategoryQuestionsPDF(categoryId);
+		HttpHeaders header = new HttpHeaders();
+		header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "Questions from Category.pdf");
+		header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+		header.add("Pragma", "no-cache");
+		header.add("Expires", "0");
+		return ResponseEntity.ok().headers(header).contentLength(content.length)
+				.contentType(MediaType.parseMediaType("application/octet-stream")).body(content);
 	}
 
 	@GetMapping("/subcategory/{categoryId}")

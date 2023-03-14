@@ -80,7 +80,7 @@ public class AdminQuestionService extends QuestionService {
 	// Return question by id
 	public QuestionWithAnswersDTO getQuestionById(int questionId) throws NotFoundException {
 		Question question = questionRepository.findById(questionId).orElseThrow(NotFoundException::new);
-		QuestionWithAnswersDTO questionDTO = fullQuestionMapper.toFullQuestionDTO(question);
+		QuestionWithAnswersDTO questionDTO = fullQuestionMapper.toQuestionWithAnswersDTO(question);
 		questionDTO.setRating(getRating(questionDTO.getId()));
 		List<AnswerDTO> answers = getAnswersByQuestion(questionId);
 		questionDTO.setAnswers(answers);

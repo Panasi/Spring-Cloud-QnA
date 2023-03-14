@@ -13,8 +13,9 @@ public interface FullQuestionMapper {
 
 	@Mapping(target = "rating", ignore = true)
 	@Mapping(target = "answers", ignore = true)
-	QuestionWithAnswersDTO toFullQuestionDTO(Question question);
+	QuestionWithAnswersDTO toQuestionWithAnswersDTO(Question question);
 
-	List<QuestionWithAnswersDTO> toFullQuestionDTOs(List<Question> questions);
+	List<QuestionWithAnswersDTO> toQuestionWithAnswersListDTO(List<Question> questions);
+
 
 }

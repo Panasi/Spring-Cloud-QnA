@@ -44,6 +44,7 @@ public class GatewayConfig {
 						r -> r.path("/comments/**").filters(f -> f.filter(filter)).uri("lb://comment-service"))
 				.route("external comment",
 						r -> r.path("/external/comments/**").filters(f -> f.filter(filter)).uri("lb://comment-service"))
+				.route("pdf", r -> r.path("/pdf/**").filters(f -> f.filter(filter)).uri("lb://pdf-service"))
 				.build();
 	}
 

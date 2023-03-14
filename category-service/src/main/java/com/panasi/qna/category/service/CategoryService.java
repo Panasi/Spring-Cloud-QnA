@@ -100,5 +100,10 @@ public class CategoryService {
 	public boolean isCategoryExists(int categoryId) {
 		return categoryRepository.existsById(categoryId);
 	}
+	
+	public String getCategoryName(int categoryId) throws NotFoundException {
+		Category category = categoryRepository.findById(categoryId).orElseThrow(NotFoundException::new);
+		return category.getName();
+	}
 
 }

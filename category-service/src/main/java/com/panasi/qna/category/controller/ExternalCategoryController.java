@@ -2,6 +2,7 @@ package com.panasi.qna.category.controller;
 
 import java.util.List;
 
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +32,12 @@ public class ExternalCategoryController {
 	@Operation(summary = "Is category exists")
 	public boolean isCategoryExists(@PathVariable int id) {
 		return categoryService.isCategoryExists(id);
+	}
+	
+	@GetMapping("/{id}/name")
+	@Operation(summary = "Is category exists")
+	public String getCategoryName(@PathVariable int id) throws NotFoundException {
+		return categoryService.getCategoryName(id);
 	}
 
 }
