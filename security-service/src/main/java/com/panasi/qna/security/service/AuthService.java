@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.panasi.qna.security.entity.Role;
 import com.panasi.qna.security.entity.User;
@@ -34,6 +38,7 @@ public class AuthService {
 	private final RoleRepository roleRepository;
 	private final JwtUtils jwtUtils;
 	private final PasswordEncoder encoder;
+	private final RestTemplate restTemplate = new RestTemplate();
 
 	public JwtResponse singnInUser(SignInRequest signInRequest) {
 
@@ -88,6 +93,19 @@ public class AuthService {
 
 		user.setRoles(roles);
 		userRepository.save(user);
+	}
+	
+	private List<Integer> getQuestionsUserIdList() {
+		String url = "http://localhost:8765/external/questions/authors";
+		ResponseEntity<List<Integer>> response = restTemplate.exchange(url, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<Integer>>() {
+				});
+		return response.getBody();
+	}
+
+	public List<String> getInactiveUserEmails() {
+		List<Integer> activeUsers = getQuestionsUserIdList();
+		return userRepository.findInactiveUserEmails(ERole.ROLE_USER, activeUsers);
 	}
 
 }

@@ -16,5 +16,6 @@
 	  <module>answer-service</module>
 	  <module>comment-service</module>
 	  <module>pdf-service</module>
+	  <module>mail-service</module>
   </modules>
 </project>

@@ -164,5 +164,10 @@ public class QuestionService {
 		Question question = questionRepository.findById(questionId).orElseThrow(NotFoundException::new);
 		return question.getAuthorId();
 	}
+	
+	// Return a list of user IDs that asked questions
+	public List<Integer> getUserIdList() {
+		return questionRepository.findAllAuthorId();
+	}
 
 }

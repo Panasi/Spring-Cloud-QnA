@@ -24,7 +24,7 @@ import reactor.core.publisher.Mono;
 public class JwtAuthenticationFilter implements GatewayFilter {
 
 	private static final List<String> SECURED_API_ENDPOINTS = List.of("/admin/");
-	private static final List<String> NOTSECURED_API_ENDPOINTS = List.of("/auth/", "/pdf/");
+	private static final List<String> NOTSECURED_API_ENDPOINTS = List.of("/auth/", "/pdf/", "/email/");
 
 	@Autowired
 	private JwtUtils jwtUtils;

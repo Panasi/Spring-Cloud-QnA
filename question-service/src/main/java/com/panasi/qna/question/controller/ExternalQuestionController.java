@@ -45,5 +45,11 @@ public class ExternalQuestionController {
 	public boolean getQuestionAuthorId(@PathVariable int id) throws NotFoundException {
 		return questionService.getQuestionIsPrivate(id);
 	}
+	
+	@GetMapping("/authors")
+	@Operation(summary = "Get question authorId id list")
+	public List<Integer> getAuthorIdList() {
+		return questionService.getUserIdList();
+	}
 
 }
