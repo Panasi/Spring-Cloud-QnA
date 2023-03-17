@@ -26,7 +26,7 @@ public class CategoryService {
 
 	private final CategoryRepository categoryRepository;
 	private final CategoryMapper categoryMapper;
-	private final RestTemplate restTemplate = new RestTemplate();
+	private final RestTemplate restTemplate;
 
 	// Return list of all categories
 	public List<CategoryDTO> getAllCategories() {

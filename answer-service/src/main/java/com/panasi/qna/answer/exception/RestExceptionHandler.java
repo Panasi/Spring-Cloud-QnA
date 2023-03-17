@@ -58,7 +58,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(ForbiddenException.class)
 	protected ResponseEntity<Object> handleForbiddenException(ForbiddenException ex, WebRequest request) {
-		ApiError apiError = new ApiError("Access Denied", ex.getMessage());
+		ApiError apiError = new ApiError("Access denied", ex.getMessage());
 		return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
 	}
 

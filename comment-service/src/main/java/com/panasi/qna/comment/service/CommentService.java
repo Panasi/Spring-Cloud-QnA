@@ -27,7 +27,8 @@ public class CommentService {
 	protected QuestionCommentMapper questionCommentMapper;
 	@Autowired
 	protected AnswerCommentMapper answerCommentMapper;
-	protected RestTemplate restTemplate = new RestTemplate();
+	@Autowired
+	protected RestTemplate restTemplate;
 
 	// Sort question comments
 	public List<QuestionCommentDTO> sortQuestionCommentDTOs(List<QuestionCommentDTO> questionCommentDTOs) {

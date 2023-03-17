@@ -76,11 +76,11 @@ public class AdminCategoryController {
 
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
-	@Operation(summary = "Delete category and all subcategories")
+	@Operation(summary = "Delete category")
 	public ResponseEntity<MessageResponse> deleteCategory(@PathVariable int id)
 			throws NotFoundException, CategoryIsNotEmptyException {
 		categoryService.deleteCategory(id);
-		String message = "Category " + id + " and all its subcategories are deleted";
+		String message = "Category deleted";
 		return new ResponseEntity<>(new MessageResponse(message), HttpStatus.OK);
 	}
 

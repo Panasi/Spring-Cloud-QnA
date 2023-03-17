@@ -32,7 +32,8 @@ public class QuestionService {
 	protected QuestionMapper questionMapper;
 	@Autowired
 	protected FullQuestionMapper fullQuestionMapper;
-	protected RestTemplate restTemplate = new RestTemplate();
+	@Autowired
+	protected RestTemplate restTemplate;
 
 	protected static final String PUBLIC = "public";
 	protected static final String PRIVATE = "private";

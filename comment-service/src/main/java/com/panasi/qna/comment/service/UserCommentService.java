@@ -167,7 +167,7 @@ public class UserCommentService extends CommentService {
 
 		int currentUserId = Utils.getCurrentUserId();
 
-		if (currentUserId == comment.getAuthorId()) {
+		if (currentUserId != comment.getAuthorId()) {
 			throw new ForbiddenException("Can't update another user's answers");
 		}
 		LocalDateTime dateTime = LocalDateTime.now();

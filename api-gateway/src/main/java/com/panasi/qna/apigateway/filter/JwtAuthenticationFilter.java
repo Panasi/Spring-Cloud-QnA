@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class JwtAuthenticationFilter implements GatewayFilter {
 
-	private static final List<String> SECURED_API_ENDPOINTS = List.of("/admin/");
+	private static final List<String> SECURED_API_ENDPOINTS = List.of("/admin/", "/comments/");
 	private static final List<String> NOTSECURED_API_ENDPOINTS = List.of("/auth/", "/pdf/", "/email/");
 
 	@Autowired

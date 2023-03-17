@@ -14,9 +14,9 @@ public class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http, AuthTokenFilter authTokenFilter) throws Exception {
-		http.httpBasic().disable().csrf().disable().cors().disable().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-				.and().authorizeRequests().anyRequest()
+		http.httpBasic().disable().csrf().disable().cors().disable()
+				.sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests().anyRequest()
 				.permitAll();
 
 		http.addFilterBefore(authTokenFilter, BasicAuthenticationFilter.class);
