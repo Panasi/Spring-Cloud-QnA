@@ -24,7 +24,7 @@ import reactor.core.publisher.Mono;
 public class JwtAuthenticationFilter implements GatewayFilter {
 
 	private static final List<String> SECURED_API_ENDPOINTS = List.of("/admin/", "/comments/");
-	private static final List<String> NOTSECURED_API_ENDPOINTS = List.of("/auth/", "/pdf/", "/email/");
+	private static final List<String> NOTSECURED_API_ENDPOINTS = List.of("/external/", "/auth/", "/pdf/", "/email/");
 
 	@Autowired
 	private JwtUtils jwtUtils;
@@ -37,8 +37,12 @@ public class JwtAuthenticationFilter implements GatewayFilter {
 
 		boolean isSecuredEndpoint = isEndpointMatched(path, SECURED_API_ENDPOINTS);
 		boolean isNotSecuredEndpoint = isEndpointMatched(path, NOTSECURED_API_ENDPOINTS);
+		
+		if (isNotSecuredEndpoint) {
+			return chain.filter(exchange);
+		}
 
-		if (isSecuredEndpoint || (!HttpMethod.GET.equals(httpMethod) && !isNotSecuredEndpoint)) {
+		if (isSecuredEndpoint || !HttpMethod.GET.equals(httpMethod)) {
 			String authToken = extractAuthHeader(request);
 			if (authToken == null) {
 				return handleUnauthorizedAccessAttempt(exchange, "Unauthorized");

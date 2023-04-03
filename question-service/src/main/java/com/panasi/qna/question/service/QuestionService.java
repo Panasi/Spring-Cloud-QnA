@@ -2,16 +2,17 @@ package com.panasi.qna.question.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.panasi.qna.question.dto.AnswerDTO;
 import com.panasi.qna.question.dto.QuestionDTO;
@@ -33,7 +34,9 @@ public class QuestionService {
 	@Autowired
 	protected FullQuestionMapper fullQuestionMapper;
 	@Autowired
-	protected RestTemplate restTemplate;
+	protected RabbitTemplate rabbitTemplate;
+	@Autowired
+	protected MessageConverter messageConverter;
 
 	protected static final String PUBLIC = "public";
 	protected static final String PRIVATE = "private";
@@ -94,81 +97,65 @@ public class QuestionService {
 		return sortedQuestionsDTO;
 	}
 
-	// Return list of subcategory id
-	public List<Integer> getAllSubcategoryId(int parentId) {
-		String url = "http://localhost:8765/external/categories/subcategoriesId/" + parentId;
-		ResponseEntity<List<Integer>> response = restTemplate.exchange(url, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<Integer>>() {
-				});
-		return response.getBody();
+	// Return list of subcategory id from category service
+	public List<Integer> getAllSubcategoryId(int categoryId) {
+	    ParameterizedTypeReference<List<Integer>> typeRef = new ParameterizedTypeReference<List<Integer>>() {};
+	    return rabbitTemplate.convertSendAndReceiveAsType("getAllSubcategoryIdQueue", categoryId, typeRef);
 	}
 
-	// Return is category exists
-	public boolean isCategoryExists(int categoryId) {
-		String url = "http://localhost:8765/external/categories/exists/" + categoryId;
-		ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.GET, null, Boolean.class);
-		return response.getBody();
+	// Return is category exists from category service
+	public Boolean isCategoryExists(int categoryId) {
+		return (Boolean) rabbitTemplate.convertSendAndReceive("isCategoryExistsQueue", categoryId);
 	}
-	
-	// Return category name
+
+	// Return category name from category service
 	public String getCategoryName(int categoryId) {
-		String url = "http://localhost:8765/external/categories/" + categoryId + "/name";
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
-		return response.getBody();
+		return (String) rabbitTemplate.convertSendAndReceive("getCategoryNameQueue", categoryId);
 	}
 
-	// Return list of answers by question
+	// Return list of question answers from answer service
 	public List<AnswerDTO> getAnswersByQuestion(int questionId) {
-		String url = "http://localhost:8765/external/answers/question?questionId=" + questionId;
-		ResponseEntity<List<AnswerDTO>> response = restTemplate.exchange(url, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<AnswerDTO>>() {
-				});
-		return response.getBody();
+		ParameterizedTypeReference<List<AnswerDTO>> typeRef = new ParameterizedTypeReference<List<AnswerDTO>>() {};
+	    return rabbitTemplate.convertSendAndReceiveAsType("getAnswersByQuestionQueue", questionId, typeRef);
 	}
 
-	// Return list of answers by question and author
+	// Return list of answers by question and author from answer service
 	public List<AnswerDTO> getAnswersByQuestionAndAuthor(int questionId, int authorId) {
-		String url = "http://localhost:8765/external/answers/question?questionId=" + questionId + "&authorId="
-				+ authorId;
-		ResponseEntity<List<AnswerDTO>> response = restTemplate.exchange(url, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<AnswerDTO>>() {
-				});
-		return response.getBody();
+		ParameterizedTypeReference<List<AnswerDTO>> typeRef = new ParameterizedTypeReference<List<AnswerDTO>>() {};
+		List<Integer> params = Arrays.asList(questionId, authorId);
+	    return rabbitTemplate.convertSendAndReceiveAsType("getAnswersByQuestionAndAuthorQueue", params, typeRef);
 	}
 
-	// Return question rating
+	// Return question rating from comment service
 	public Double getRating(int questionId) {
-		String url = "http://localhost:8765/external/comments/question/rating/" + questionId;
-		ResponseEntity<Double> response = restTemplate.exchange(url, HttpMethod.GET, null, Double.class);
-		Double rating = response.getBody();
-		return rating != null ? (Math.ceil(rating * 100) / 100) : null;
+		Double rating = (Double) rabbitTemplate.convertSendAndReceive("getQuestionRatingQueue", questionId);
+		return rating != 0.0 ? (Math.ceil(rating * 100) / 100) : null;
 	}
 
 	// Return list of question id by category
-	public List<Integer> getAllQuestionIdByCategory(int categoryId) {
-		return questionRepository.findAllQuestionIdByCategory(categoryId);
+	@RabbitListener(queues = "getCategoryQuestionsCountQueue")
+	public Integer getAllQuestionIdByCategory(int categoryId) {
+		return questionRepository.countByCategoryId(categoryId);
 	}
 
 	// Return is question exists
+	@RabbitListener(queues = "isQuestionExistsQueue")
 	public boolean isQuestionExists(int questionId) {
 		return questionRepository.existsById(questionId);
 	}
 
 	// Return question isPrivate value by question id
+	@RabbitListener(queues = "getQuestionIsPrivateQueue")
 	public boolean getQuestionIsPrivate(int questionId) throws NotFoundException {
 		Question question = questionRepository.findById(questionId).orElseThrow(NotFoundException::new);
 		return question.getIsPrivate();
 	}
 
 	// Return question authorId value by question id
+	@RabbitListener(queues = "getQuestionAuthorIdQueue")
 	public int getQuestionAuthorId(int questionId) throws NotFoundException {
 		Question question = questionRepository.findById(questionId).orElseThrow(NotFoundException::new);
 		return question.getAuthorId();
-	}
-	
-	// Return a list of user IDs that asked questions
-	public List<Integer> getUserIdList() {
-		return questionRepository.findAllAuthorId();
 	}
 
 }

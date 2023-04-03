@@ -26,105 +26,87 @@ import org.springframework.transaction.annotation.Transactional;
 @TestPropertySource(locations = "classpath:application.properties")
 @Transactional
 public class GuestCategoryControllerTest {
-	
+
 	@Autowired
 	private MockMvc mvc;
-	
-	                                         // Get
-	
+
+	// Get
+
 	@Test
 	public void showAllCategories_then_Status200() throws Exception {
 
-	    mvc.perform(get("/categories")
-	    	.contentType(MediaType.APPLICATION_JSON))
-	      	.andExpect(status().isOk())
-	      	.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-	      	.andExpect(jsonPath("$[0].name", is("Category1")))
-	      	.andExpect(jsonPath("$[1].name", is("Category2")))
-	      	.andExpect(jsonPath("$[1].parentId", is(1)))
-	      	.andExpect(jsonPath("$[2].name", is("Category3")));
-	    
+		mvc.perform(get("/categories").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$[0].name", is("Category1"))).andExpect(jsonPath("$[1].name", is("Category2")))
+				.andExpect(jsonPath("$[1].parentId", is(1))).andExpect(jsonPath("$[2].name", is("Category3")))
+				.andExpect(jsonPath("$[3].name", is("Category4")));
+
 	}
-	
+
 	@Test
 	public void showSubcategories_then_Status200() throws Exception {
 
-	    mvc.perform(get("/categories/1/subcategories")
-	    	.contentType(MediaType.APPLICATION_JSON))
-	      	.andExpect(status().isOk())
-	      	.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-	      	.andExpect(jsonPath("$[0].name", is("Category2")))
-	      	.andExpect(jsonPath("$[0].parentId", is(1)))
-	      	.andExpect(jsonPath("$[1].name").doesNotHaveJsonPath());
-	    
+		mvc.perform(get("/categories/1/subcategories").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$[0].name", is("Category2"))).andExpect(jsonPath("$[0].parentId", is(1)))
+				.andExpect(jsonPath("$[1].name").doesNotHaveJsonPath());
+
 	}
-	
+
 	@Test
 	public void showCategoryById_then_Status200() throws Exception {
 
-	    mvc.perform(get("/categories/2")
-	    	.contentType(MediaType.APPLICATION_JSON))
-	      	.andExpect(status().isOk())
-	      	.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-	      	.andExpect(jsonPath("name", is("Category2")))
-	      	.andExpect(jsonPath("parentId", is(1)));
+		mvc.perform(get("/categories/2").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("name", is("Category2"))).andExpect(jsonPath("parentId", is(1)));
 
 	}
-	
+
 	@Test
 	public void showCategoryById_then_Status404() throws Exception {
 
-	    mvc.perform(get("/categories/99")
-	    	.contentType(MediaType.APPLICATION_JSON))
-	      	.andExpect(status().isNotFound())
-	      	.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-	      	.andExpect(jsonPath("message", is("Element not found")));
+		mvc.perform(get("/categories/99").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("message", is("Element not found")));
 
 	}
-	
+
 	@Test
 	public void showCategoryById_then_Status400() throws Exception {
 
-	    mvc.perform(get("/categories/wtf")
-	    	.contentType(MediaType.APPLICATION_JSON))
-	      	.andExpect(status().isBadRequest())
-	      	.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-	      	.andExpect(jsonPath("message", is("Argument type mismatch")));
+		mvc.perform(get("/categories/wtf").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("message", is("Argument type mismatch")));
 
 	}
-	
-											// Post
-	
+
+	// Post
+
 	@Test
 	public void addNewCategory_then_Status401() throws Exception {
 
-	    mvc.perform(post("/admin/categories")
-	    	.contentType(MediaType.APPLICATION_JSON)
-	    	.content("{\"name\": \"RandomCategory\"}"))
-	    	.andExpect(status().isForbidden());
+		mvc.perform(post("/admin/categories").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"name\": \"RandomCategory\"}")).andExpect(status().isForbidden());
 
 	}
-	
-											// Put
-	
+
+	// Put
+
 	@Test
 	public void updateCategory_then_Status401() throws Exception {
-		
-	    mvc.perform(put("/admin/categories/4")
-	    	.contentType(MediaType.APPLICATION_JSON)
-	    	.content("{\"name\": \"Category4 updated\"}"))
-	    	.andExpect(status().isForbidden());
+
+		mvc.perform(put("/admin/categories/4").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"name\": \"Category4 updated\"}")).andExpect(status().isForbidden());
 
 	}
-	
-											// Delete
-	
+
+	// Delete
+
 	@Test
 	public void deleteCategory_then_Status401() throws Exception {
-		
-	    mvc.perform(delete("/admin/categories/5")
-	    	.contentType(MediaType.APPLICATION_JSON))
-	    	.andExpect(status().isForbidden());
+
+		mvc.perform(delete("/admin/categories/5").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isForbidden());
 
 	}
 

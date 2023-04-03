@@ -1,14 +1,12 @@
 package com.panasi.qna.comment;
 
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -17,19 +15,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.client.ExpectedCount;
-import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
@@ -40,26 +35,14 @@ public class AdminCommentControllerTest {
 
 	@Autowired
 	private MockMvc mvc;
-	@Autowired
-	private RestTemplate restTemplate;
-	private MockRestServiceServer mockServer;
+
+	@MockBean
+	private RabbitTemplate rabbitTemplateMock;
 
 	@BeforeEach
-	public void init() throws Exception {
-		mockServer = MockRestServiceServer.bindTo(this.restTemplate).ignoreExpectOrder(true).build();
-		setUpMockExternalCommentsServer();
-	}
-
-	private void setUpMockExternalCommentsServer() throws Exception {
-		Boolean mockedIsExists = true;
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/questions/exists/2"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedIsExists.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/answers/exists/2"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedIsExists.toString()));
+	public void mockRabbitTemplate() {
+		when(rabbitTemplateMock.convertSendAndReceive("isQuestionExistsQueue", 2)).thenReturn(true);
+		when(rabbitTemplateMock.convertSendAndReceive("isAnswerExistsQueue", 2)).thenReturn(true);
 	}
 
 	// Get
@@ -160,8 +143,8 @@ public class AdminCommentControllerTest {
 	@WithUserDetails("Admin")
 	public void addQuestionComment_then_Status201() throws Exception {
 
-		mvc.perform(post("/admin/comments/question/2").contentType(MediaType.APPLICATION_JSON)
-				.content("{\"content\": \"Random Comment\"," + "\"rate\": 5}").characterEncoding("utf-8"))
+		mvc.perform(post("/admin/comments/question").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"targetId\": 2," + "\"content\": \"Random Comment\"," + "\"rate\": 5}").characterEncoding("utf-8"))
 				.andExpect(status().isCreated());
 
 	}
@@ -170,8 +153,8 @@ public class AdminCommentControllerTest {
 	@WithUserDetails("Admin")
 	public void addAnswerComment_then_Status201() throws Exception {
 
-		mvc.perform(post("/admin/comments/answer/2").contentType(MediaType.APPLICATION_JSON)
-				.content("{\"content\": \"Random Comment\"," + "\"rate\": 5}").characterEncoding("utf-8"))
+		mvc.perform(post("/admin/comments/answer").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"targetId\": 2," + "\"content\": \"Random Comment\"," + "\"rate\": 5}").characterEncoding("utf-8"))
 				.andExpect(status().isCreated());
 
 	}

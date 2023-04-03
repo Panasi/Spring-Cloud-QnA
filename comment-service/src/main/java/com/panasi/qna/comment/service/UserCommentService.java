@@ -92,8 +92,8 @@ public class UserCommentService extends CommentService {
 	}
 
 	// Add a new comment to question
-	public void createQuestionComment(CommentRequest commentRequest, int questionId)
-			throws NotFoundException, ForbiddenException {
+	public void createQuestionComment(CommentRequest commentRequest) throws NotFoundException, ForbiddenException {
+		int questionId = commentRequest.getTargetId();
 		if (!isQuestionExists(questionId)) {
 			throw new NotFoundException();
 		}
@@ -107,15 +107,16 @@ public class UserCommentService extends CommentService {
 		}
 
 		LocalDateTime dateTime = LocalDateTime.now();
-		QuestionCommentDTO commentDTO = QuestionCommentDTO.builder().content(commentRequest.getContent())
-				.rate(commentRequest.getRate()).questionId(questionId).authorId(currentUserId).date(dateTime).build();
+		QuestionCommentDTO commentDTO = QuestionCommentDTO.builder().questionId(questionId)
+				.content(commentRequest.getContent()).rate(commentRequest.getRate()).authorId(currentUserId)
+				.date(dateTime).build();
 		QuestionComment comment = questionCommentMapper.toComment(commentDTO);
 		questionCommentRepository.save(comment);
 	}
 
 	// Add a new comment to answer
-	public void createAnswerComment(CommentRequest commentRequest, int answerId)
-			throws NotFoundException, ForbiddenException {
+	public void createAnswerComment(CommentRequest commentRequest) throws NotFoundException, ForbiddenException {
+		int answerId = commentRequest.getTargetId();
 		if (!isAnswerExists(answerId)) {
 			throw new NotFoundException();
 		}
@@ -129,8 +130,8 @@ public class UserCommentService extends CommentService {
 		}
 
 		LocalDateTime dateTime = LocalDateTime.now();
-		AnswerCommentDTO commentDTO = AnswerCommentDTO.builder().content(commentRequest.getContent())
-				.rate(commentRequest.getRate()).answerId(answerId).authorId(currentUserId).date(dateTime).build();
+		AnswerCommentDTO commentDTO = AnswerCommentDTO.builder().answerId(answerId).content(commentRequest.getContent())
+				.rate(commentRequest.getRate()).authorId(currentUserId).date(dateTime).build();
 		AnswerComment comment = answerCommentMapper.toComment(commentDTO);
 		answerCommentRepository.save(comment);
 

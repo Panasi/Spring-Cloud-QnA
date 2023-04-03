@@ -1,9 +1,7 @@
 package com.panasi.qna.answer;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -12,24 +10,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.client.ExpectedCount;
-import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
@@ -40,32 +34,19 @@ public class AdminAnswerControllerTest {
 
 	@Autowired
 	private MockMvc mvc;
-	@Autowired
-	private RestTemplate restTemplate;
-	private MockRestServiceServer mockServer;
+	
+	@MockBean
+	private RabbitTemplate rabbitTemplateMock;
 
 	@BeforeEach
-	public void init() throws Exception {
-		mockServer = MockRestServiceServer.bindTo(this.restTemplate).ignoreExpectOrder(true).build();
-		setUpMockExternalCommentsServer();
-	}
-
-	private void setUpMockExternalCommentsServer() throws Exception {
-		Double mockedRating = 5.0;
-		Boolean mockedIsQuestionExests = true;
-
-		mockServer
-				.expect(ExpectedCount.manyTimes(),
-						requestTo(
-								Matchers.matchesPattern(".*http://localhost:8765/external/comments/answer/rating/.*")))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedRating.toString()));
-
-		mockServer
-				.expect(ExpectedCount.manyTimes(),
-						requestTo("http://localhost:8765/external/questions/exists/1"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedIsQuestionExests.toString()));
+	public void mockRabbitTemplate() {
+		when(rabbitTemplateMock.convertSendAndReceive("getAnswerRatingQueue", 1)).thenReturn(5.0);
+		when(rabbitTemplateMock.convertSendAndReceive("getAnswerRatingQueue", 2)).thenReturn(5.0);
+		when(rabbitTemplateMock.convertSendAndReceive("getAnswerRatingQueue", 3)).thenReturn(5.0);
+		when(rabbitTemplateMock.convertSendAndReceive("getAnswerRatingQueue", 4)).thenReturn(5.0);
+		when(rabbitTemplateMock.convertSendAndReceive("getAnswerRatingQueue", 5)).thenReturn(5.0);
+		when(rabbitTemplateMock.convertSendAndReceive("getAnswerRatingQueue", 6)).thenReturn(5.0);
+		when(rabbitTemplateMock.convertSendAndReceive("isQuestionExistsQueue", 1)).thenReturn(true);
 	}
 
 	// Get

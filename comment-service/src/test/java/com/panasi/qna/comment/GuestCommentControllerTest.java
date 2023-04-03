@@ -67,8 +67,8 @@ public class GuestCommentControllerTest {
 	@Test
 	public void addQuestionComment_then_Status401() throws Exception {
 
-		mvc.perform(post("/comments/question/3").contentType(MediaType.APPLICATION_JSON)
-				.content("{\"content\": \"Random Comment\"," + "\"rate\": 5}").characterEncoding("utf-8"))
+		mvc.perform(post("/comments/question").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"targetId\": 3," + "\"content\": \"Random Comment\"," + "\"rate\": 5}").characterEncoding("utf-8"))
 				.andExpect(status().isForbidden());
 
 	}

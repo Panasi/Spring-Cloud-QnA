@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -154,32 +151,22 @@ public class UserQuestionService extends QuestionService {
 	// Return PDF file for questions with answers
 	public byte[] getQuestionsPDF() throws DownloadException {
 
-		String url = "http://localhost:8765/pdf/download";
-
 		List<QuestionWithAnswersDTO> questions = getFullQuestions();
-
 		if (questions.isEmpty()) {
-			throw new DownloadException("Questions doesn't exist");
+			throw new DownloadException("Question list is empty");
 		}
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add("fileName", "Questions and Answers.pdf");
-		headers.add("title", "Questions and answers");
-
-		HttpEntity<List<QuestionWithAnswersDTO>> request = new HttpEntity<>(questions, headers);
-		ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.POST, request, byte[].class);
-
-		if (response.getStatusCode() != HttpStatus.OK) {
-			throw new DownloadException("Error downloading file");
-		}
-		return response.getBody();
+		MessageProperties messageProperties = new MessageProperties();
+	    messageProperties.setContentType(MediaType.APPLICATION_JSON_VALUE);
+	    messageProperties.setHeader("fileName", "Questions and Answers.pdf");
+	    messageProperties.setHeader("title", "Questions and answers");
+	    Message message = messageConverter.toMessage(questions, messageProperties);
+	    return (byte[]) rabbitTemplate.convertSendAndReceive("getQuestionsPDFQueue", message);
+	    
 	}
 
 	// Return PDF file for questions with answers from category
 	public byte[] getCategoryQuestionsPDF(int categoryId) throws DownloadException {
-
-		String url = "http://localhost:8765/pdf/download";
 
 		List<QuestionWithAnswersDTO> questions = getFullCategoryQuestions(categoryId);
 
@@ -189,18 +176,12 @@ public class UserQuestionService extends QuestionService {
 
 		String categoryName = getCategoryName(categoryId);
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add("fileName", "Questions from Category.pdf");
-		headers.add("title", "Questions and answers from " + categoryName + " category");
-
-		HttpEntity<List<QuestionWithAnswersDTO>> request = new HttpEntity<>(questions, headers);
-		ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.POST, request, byte[].class);
-
-		if (response.getStatusCode() != HttpStatus.OK) {
-			throw new DownloadException("Error downloading file");
-		}
-		return response.getBody();
+		MessageProperties messageProperties = new MessageProperties();
+	    messageProperties.setContentType(MediaType.APPLICATION_JSON_VALUE);
+	    messageProperties.setHeader("fileName", "Questions and Answers from " + categoryName + " category.pdf");
+	    messageProperties.setHeader("title", "Questions and answers from " + categoryName + " category");
+	    Message message = messageConverter.toMessage(questions, messageProperties);
+	    return (byte[]) rabbitTemplate.convertSendAndReceive("getQuestionsPDFQueue", message);
 	}
 
 }

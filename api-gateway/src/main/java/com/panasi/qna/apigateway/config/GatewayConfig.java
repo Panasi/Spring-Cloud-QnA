@@ -15,7 +15,7 @@ public class GatewayConfig {
 	private JwtAuthenticationFilter filter;
 
 	@Bean
-	public RouteLocator routes(RouteLocatorBuilder builder) {
+	RouteLocator routes(RouteLocatorBuilder builder) {
 		return builder.routes()
 				.route("auth", r -> r.path("/auth/**").filters(f -> f.filter(filter)).uri("lb://security-service"))
 				.route("admin category",

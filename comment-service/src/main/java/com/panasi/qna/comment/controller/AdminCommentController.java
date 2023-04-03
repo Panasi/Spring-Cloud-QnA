@@ -81,21 +81,19 @@ public class AdminCommentController {
 		return new ResponseEntity<>(commentDTO, HttpStatus.OK);
 	}
 
-	@PostMapping("/question/{questionId}")
+	@PostMapping("/question")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Add a new question comment")
-	public ResponseEntity<CommentRequest> addNewQuestionComment(@RequestBody CommentRequest commentRequest,
-			@PathVariable int questionId) throws NotFoundException {
-		service.createQuestionComment(commentRequest, questionId);
+	public ResponseEntity<CommentRequest> addNewQuestionComment(@RequestBody CommentRequest commentRequest) throws NotFoundException {
+		service.createQuestionComment(commentRequest);
 		return new ResponseEntity<>(commentRequest, HttpStatus.CREATED);
 	}
 
-	@PostMapping("/answer/{answerId}")
+	@PostMapping("/answer")
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@Operation(summary = "Add a new answer comment")
-	public ResponseEntity<CommentRequest> addNewAnswerComment(@RequestBody CommentRequest commentRequest,
-			@PathVariable int answerId) throws NotFoundException {
-		service.createAnswerComment(commentRequest, answerId);
+	public ResponseEntity<CommentRequest> addNewAnswerComment(@RequestBody CommentRequest commentRequest) throws NotFoundException {
+		service.createAnswerComment(commentRequest);
 		return new ResponseEntity<>(commentRequest, HttpStatus.CREATED);
 	}
 

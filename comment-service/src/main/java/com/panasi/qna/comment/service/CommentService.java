@@ -3,11 +3,10 @@ package com.panasi.qna.comment.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.panasi.qna.comment.dto.AnswerCommentDTO;
 import com.panasi.qna.comment.dto.QuestionCommentDTO;
@@ -28,7 +27,7 @@ public class CommentService {
 	@Autowired
 	protected AnswerCommentMapper answerCommentMapper;
 	@Autowired
-	protected RestTemplate restTemplate;
+	protected RabbitTemplate rabbitTemplate;
 
 	// Sort question comments
 	public List<QuestionCommentDTO> sortQuestionCommentDTOs(List<QuestionCommentDTO> questionCommentDTOs) {
@@ -56,58 +55,48 @@ public class CommentService {
 		return sortedComments;
 	}
 
-	// Return is question exists
+	// Return is question exists from question service
 	public boolean isQuestionExists(int questionId) {
-		String url = "http://localhost:8765/external/questions/exists/" + questionId;
-		ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.GET, null, Boolean.class);
-		return response.getBody();
+		return (Boolean) rabbitTemplate.convertSendAndReceive("isQuestionExistsQueue", questionId);
 	}
 
-	// Return is answer exists
+	// Return is answer exists from answer service
 	public boolean isAnswerExists(int answerId) {
-		String url = "http://localhost:8765/external/answers/exists/" + answerId;
-		ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.GET, null, Boolean.class);
-		return response.getBody();
+		return (Boolean) rabbitTemplate.convertSendAndReceive("isAnswerExistsQueue", answerId);
 	}
 
-	// Return question isPrivate value by question id
+	// Return question isPrivate value by question id from question service
 	public boolean getQuestionIsPrivate(int questionId) {
-		String url = "http://localhost:8765/external/questions/isPrivate/" + questionId;
-		ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.GET, null, Boolean.class);
-		return response.getBody();
+		return (Boolean) rabbitTemplate.convertSendAndReceive("getQuestionIsPrivateQueue", questionId);
 	}
 
-	// Return answer isPrivate value by answer id
+	// Return answer isPrivate value by answer id from answer service
 	public boolean getAnswerIsPrivate(int answerId) {
-		String url = "http://localhost:8765/external/answers/isPrivate/" + answerId;
-		ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.GET, null, Boolean.class);
-		return response.getBody();
+		return (Boolean) rabbitTemplate.convertSendAndReceive("getAnswerIsPrivateQueue", answerId);
 	}
 
-	// Return question authorId value by question id
+	// Return question authorId value by question id from question service
 	public int getQuestionAuthorId(int questionId) {
-		String url = "http://localhost:8765/external/questions/authorId/" + questionId;
-		ResponseEntity<Integer> response = restTemplate.exchange(url, HttpMethod.GET, null, Integer.class);
-		return response.getBody();
+		return (Integer) rabbitTemplate.convertSendAndReceive("getQuestionAuthorIdQueue", questionId);
 	}
 
-	// Return answer authorId value by answer id
+	// Return answer authorId value by answer id from answer service
 	public int getAnswerAuthorId(int answerId) {
-		String url = "http://localhost:8765/external/answers/authorId/" + answerId;
-		ResponseEntity<Integer> response = restTemplate.exchange(url, HttpMethod.GET, null, Integer.class);
-		return response.getBody();
+		return (Integer) rabbitTemplate.convertSendAndReceive("getAnswerAuthorIdQueue", answerId);
 	}
 
 	// Return question rating
+	@RabbitListener(queues = "getQuestionRatingQueue")
 	public Double getQuestionRating(int questionId) {
 		Double rating = questionCommentRepository.getRating(questionId);
-		return rating != null ? rating : null;
+		return rating != null ? rating : 0.0;
 	}
 
 	// Return answer rating
+	@RabbitListener(queues = "getAnswerRatingQueue")
 	public Double getAnswerRating(int answerId) {
 		Double rating = answerCommentRepository.getRating(answerId);
-		return rating != null ? rating : null;
+		return rating != null ? rating : 0.0;
 	}
 
 }

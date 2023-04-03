@@ -1,3 +1,9 @@
+TRUNCATE TABLE question_comments;
+ALTER TABLE question_comments ALTER COLUMN id RESTART WITH 1;
+
+TRUNCATE TABLE answer_comments;
+ALTER TABLE answer_comments ALTER COLUMN id RESTART WITH 1;
+
 INSERT INTO question_comments (content, rate, question_id, user_id, date) VALUES
 ('Comment1', 1, 1, 2, '2023-01-27T10:53:00.092804'),
 ('Comment2', 2, 1, 2, '2023-01-27T10:52:00.092804'),

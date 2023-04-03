@@ -1,3 +1,5 @@
+TRUNCATE TABLE questions;
+ALTER TABLE questions ALTER COLUMN id RESTART WITH 1;
 INSERT INTO questions (content, user_id, category_id, is_private, date) VALUES
 ('Admin public question',  1, 1, false, '2023-01-27T10:53:00.092804'),
 ('Admin private question', 1, 2, true, '2023-01-27T10:52:00.092804'),

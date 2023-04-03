@@ -3,13 +3,11 @@ package com.panasi.qna.category.service;
 import java.util.List;
 import java.util.Objects;
 
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import com.panasi.qna.category.dto.CategoryDTO;
 import com.panasi.qna.category.entity.Category;
@@ -26,7 +24,7 @@ public class CategoryService {
 
 	private final CategoryRepository categoryRepository;
 	private final CategoryMapper categoryMapper;
-	private final RestTemplate restTemplate;
+	private final RabbitTemplate rabbitTemplate;
 
 	// Return list of all categories
 	public List<CategoryDTO> getAllCategories() {
@@ -75,32 +73,32 @@ public class CategoryService {
 			deleteCategory(subcategory.getId());
 		}
 
-		List<Integer> categoryQuestionIds = getAllQuestionIdFromCategory(categoryId);
-		if (!categoryQuestionIds.isEmpty()) {
+		Integer categoryQuestionsCount = getCategoryQuestionsCount(categoryId);
+		if (categoryQuestionsCount > 0) {
 			throw new CategoryIsNotEmptyException("Category or subcategory is not empty");
 		}
 		categoryRepository.delete(category);
 	}
 
-	// Return list of question id from category
-	public List<Integer> getAllQuestionIdFromCategory(int categoryId) {
-		String url = "http://localhost:8765/external/questions/categoryId/" + categoryId;
-		ResponseEntity<List<Integer>> response = restTemplate.exchange(url, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<Integer>>() {
-				});
-		return response.getBody();
+	// Return category questions count from question service
+	public Integer getCategoryQuestionsCount(int categoryId) {
+		return (Integer) rabbitTemplate.convertSendAndReceive("getCategoryQuestionsCountQueue", categoryId);
 	}
 
 	// Return list of subcategory id
+	@RabbitListener(queues = "getAllSubcategoryIdQueue")
 	public List<Integer> getAllSubcategoryId(int parentId) {
 		return categoryRepository.findAllCategoryIdByParentId(parentId);
 	}
 
 	// Return is category exists
-	public boolean isCategoryExists(int categoryId) {
+	@RabbitListener(queues = "isCategoryExistsQueue")
+	public Boolean isCategoryExists(int categoryId) {
 		return categoryRepository.existsById(categoryId);
 	}
 	
+	// Return categories name
+	@RabbitListener(queues = "getCategoryNameQueue")
 	public String getCategoryName(int categoryId) throws NotFoundException {
 		Category category = categoryRepository.findById(categoryId).orElseThrow(NotFoundException::new);
 		return category.getName();

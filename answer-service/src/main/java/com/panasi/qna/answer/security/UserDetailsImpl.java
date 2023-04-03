@@ -3,7 +3,6 @@ package com.panasi.qna.answer.security;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,8 +22,8 @@ public class UserDetailsImpl implements UserDetails {
 	}
 
 	public static UserDetailsImpl build(User user) {
-		List<GrantedAuthority> authorities = user.getRoles().stream().map(SimpleGrantedAuthority::new)
-				.collect(Collectors.toList());
+		List<SimpleGrantedAuthority> authorities = user.getRoles().stream().map(SimpleGrantedAuthority::new)
+				.toList();
 
 		return new UserDetailsImpl(user.getId(), user.getUsername(), authorities);
 	}

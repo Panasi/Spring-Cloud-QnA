@@ -1,3 +1,5 @@
+TRUNCATE TABLE answers;
+ALTER TABLE answers ALTER COLUMN id RESTART WITH 1;
 INSERT INTO answers (content, user_id, question_id, is_private, date) VALUES
 ('Admin public answer',  1, 3, false, '2023-01-27T10:53:00.092804'),
 ('Admin private answer', 1, 1, true, '2023-01-27T10:52:00.092804'),

@@ -1,9 +1,7 @@
 package com.panasi.qna.question;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -14,25 +12,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.client.ExpectedCount;
-import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
-import com.panasi.qna.question.dto.AnswerDTO;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
@@ -43,75 +36,22 @@ public class GuestQuestionControllerTest {
 
 	@Autowired
 	private MockMvc mvc;
-	@Autowired
-	private RestTemplate restTemplate;
-	private MockRestServiceServer mockServer;
+	
+	@MockBean
+	private RabbitTemplate rabbitTemplateMock;
 
 	@BeforeEach
-	public void init() throws Exception {
-		mockServer = MockRestServiceServer.bindTo(this.restTemplate).ignoreExpectOrder(true).build();
-		setUpMockExternalCommentsServer();
-	}
-
-	private void setUpMockExternalCommentsServer() throws Exception {
-		Double mockedRating = 5.0;
-		List<Integer> mockedSubcategory1List = List.of(2);
-		List<Integer> mockedSubcategoryList = List.of();
-		List<AnswerDTO> mockedAnswerList = List.of();
-		Boolean mockedIsCategory1Exists = true;
-
-		mockServer
-				.expect(ExpectedCount.manyTimes(),
-						requestTo(Matchers
-								.matchesPattern(".*http://localhost:8765/external/comments/question/rating/.*")))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedRating.toString()));
-
-		mockServer
-				.expect(ExpectedCount.manyTimes(),
-						requestTo(Matchers.matchesPattern(".*http://localhost:8765/external/answers/.*")))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedAnswerList.toString()));
-
-		mockServer
-				.expect(ExpectedCount.manyTimes(),
-						requestTo("http://localhost:8765/external/categories/subcategoriesId/1"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedSubcategory1List.toString()));
-
-		mockServer
-				.expect(ExpectedCount.manyTimes(),
-						requestTo("http://localhost:8765/external/categories/subcategoriesId/2"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedSubcategoryList.toString()));
-
-		mockServer
-				.expect(ExpectedCount.manyTimes(),
-						requestTo("http://localhost:8765/external/categories/subcategoriesId/3"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedSubcategoryList.toString()));
-
-		mockServer
-				.expect(ExpectedCount.manyTimes(),
-						requestTo("http://localhost:8765/external/categories/subcategoriesId/4"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedSubcategoryList.toString()));
-
-		mockServer
-				.expect(ExpectedCount.manyTimes(),
-						requestTo("http://localhost:8765/external/categories/subcategoriesId/5"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedSubcategoryList.toString()));
-
-		mockServer
-				.expect(ExpectedCount.manyTimes(),
-						requestTo("http://localhost:8765/external/categories/subcategoriesId/6"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedSubcategoryList.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/categories/exists/1"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedIsCategory1Exists.toString()));
+	public void mockRabbitTemplate() {
+		ParameterizedTypeReference<List<Integer>> listIntType = new ParameterizedTypeReference<List<Integer>>() {};
+		when(rabbitTemplateMock.convertSendAndReceive("getQuestionRatingQueue", 1)).thenReturn(5.0);
+		when(rabbitTemplateMock.convertSendAndReceive("getQuestionRatingQueue", 2)).thenReturn(5.0);
+		when(rabbitTemplateMock.convertSendAndReceive("getQuestionRatingQueue", 3)).thenReturn(5.0);
+		when(rabbitTemplateMock.convertSendAndReceive("getQuestionRatingQueue", 4)).thenReturn(5.0);
+		when(rabbitTemplateMock.convertSendAndReceive("getQuestionRatingQueue", 5)).thenReturn(5.0);
+		when(rabbitTemplateMock.convertSendAndReceive("getQuestionRatingQueue", 6)).thenReturn(5.0);
+		when(rabbitTemplateMock.convertSendAndReceiveAsType("getAllSubcategoryIdQueue", 1, listIntType)).thenReturn(List.of(2));
+		when(rabbitTemplateMock.convertSendAndReceiveAsType("getAllSubcategoryIdQueue", 2, listIntType)).thenReturn(List.of());
+		when(rabbitTemplateMock.convertSendAndReceive("isCategoryExistsQueue", 1)).thenReturn(true);
 	}
 
 	// Get

@@ -1,13 +1,11 @@
 package com.panasi.qna.comment;
 
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,19 +14,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.client.ExpectedCount;
-import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
@@ -39,124 +34,36 @@ public class UserCommentControllerTest {
 
 	@Autowired
 	private MockMvc mvc;
-	@Autowired
-	private RestTemplate restTemplate;
-	private MockRestServiceServer mockServer;
+	
+	@MockBean
+	private RabbitTemplate rabbitTemplateMock;
 
 	@BeforeEach
-	public void init() throws Exception {
-		mockServer = MockRestServiceServer.bindTo(this.restTemplate).ignoreExpectOrder(true).build();
-		setUpMockExternalCommentsServer();
-	}
-
-	private void setUpMockExternalCommentsServer() throws Exception {
-		Boolean mockedIsPrivate = true;
-		Boolean mockedIsNotPrivate = false;
-		Boolean mockedExists = true;
-		Integer mockedQuestion1Author = 1;
-		Integer mockedQuestion2Author = 1;
-		Integer mockedQuestion3Author = 3;
-		Integer mockedQuestion6Author = 3;
-		Integer mockedAnswer1Author = 1;
-		Integer mockedAnswer2Author = 1;
-		Integer mockedAnswer3Author = 2;
-		Integer mockedAnswer6Author = 3;
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/questions/isPrivate/1"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedIsNotPrivate.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/questions/isPrivate/2"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedIsPrivate.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/questions/isPrivate/3"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedIsNotPrivate.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/questions/isPrivate/6"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedIsPrivate.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/answers/isPrivate/1"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedIsNotPrivate.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/answers/isPrivate/2"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedIsPrivate.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/answers/isPrivate/3"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedIsNotPrivate.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/answers/isPrivate/6"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedIsPrivate.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/questions/authorId/1"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedQuestion1Author.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/questions/authorId/2"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedQuestion2Author.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/questions/authorId/3"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedQuestion3Author.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/questions/authorId/6"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedQuestion6Author.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/answers/authorId/1"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedAnswer1Author.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/answers/authorId/2"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedAnswer2Author.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/answers/authorId/3"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedAnswer3Author.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/answers/authorId/6"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedAnswer6Author.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/questions/exists/1"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedExists.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/questions/exists/2"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedExists.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/questions/exists/3"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedExists.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/questions/exists/6"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedExists.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/answers/exists/1"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedExists.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/answers/exists/2"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedExists.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/answers/exists/3"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedExists.toString()));
-
-		mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://localhost:8765/external/answers/exists/6"))
-				.andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.OK)
-						.contentType(MediaType.APPLICATION_JSON).body(mockedExists.toString()));
+	public void mockRabbitTemplate() {
+		when(rabbitTemplateMock.convertSendAndReceive("isQuestionExistsQueue", 1)).thenReturn(true);
+		when(rabbitTemplateMock.convertSendAndReceive("isQuestionExistsQueue", 2)).thenReturn(true);
+		when(rabbitTemplateMock.convertSendAndReceive("isQuestionExistsQueue", 3)).thenReturn(true);
+		when(rabbitTemplateMock.convertSendAndReceive("isQuestionExistsQueue", 6)).thenReturn(true);
+		when(rabbitTemplateMock.convertSendAndReceive("isAnswerExistsQueue", 1)).thenReturn(true);
+		when(rabbitTemplateMock.convertSendAndReceive("isAnswerExistsQueue", 2)).thenReturn(true);
+		when(rabbitTemplateMock.convertSendAndReceive("isAnswerExistsQueue", 3)).thenReturn(true);
+		when(rabbitTemplateMock.convertSendAndReceive("isAnswerExistsQueue", 6)).thenReturn(true);
+		when(rabbitTemplateMock.convertSendAndReceive("getQuestionIsPrivateQueue", 1)).thenReturn(false);
+		when(rabbitTemplateMock.convertSendAndReceive("getQuestionIsPrivateQueue", 2)).thenReturn(true);
+		when(rabbitTemplateMock.convertSendAndReceive("getQuestionIsPrivateQueue", 3)).thenReturn(false);
+		when(rabbitTemplateMock.convertSendAndReceive("getQuestionIsPrivateQueue", 6)).thenReturn(true);
+		when(rabbitTemplateMock.convertSendAndReceive("getAnswerIsPrivateQueue", 1)).thenReturn(false);
+		when(rabbitTemplateMock.convertSendAndReceive("getAnswerIsPrivateQueue", 2)).thenReturn(true);
+		when(rabbitTemplateMock.convertSendAndReceive("getAnswerIsPrivateQueue", 3)).thenReturn(false);
+		when(rabbitTemplateMock.convertSendAndReceive("getAnswerIsPrivateQueue", 6)).thenReturn(true);
+		when(rabbitTemplateMock.convertSendAndReceive("getQuestionAuthorIdQueue", 1)).thenReturn(1);
+		when(rabbitTemplateMock.convertSendAndReceive("getQuestionAuthorIdQueue", 2)).thenReturn(1);
+		when(rabbitTemplateMock.convertSendAndReceive("getQuestionAuthorIdQueue", 3)).thenReturn(3);
+		when(rabbitTemplateMock.convertSendAndReceive("getQuestionAuthorIdQueue", 6)).thenReturn(3);
+		when(rabbitTemplateMock.convertSendAndReceive("getAnswerAuthorIdQueue", 1)).thenReturn(1);
+		when(rabbitTemplateMock.convertSendAndReceive("getAnswerAuthorIdQueue", 2)).thenReturn(1);
+		when(rabbitTemplateMock.convertSendAndReceive("getAnswerAuthorIdQueue", 3)).thenReturn(3);
+		when(rabbitTemplateMock.convertSendAndReceive("getAnswerAuthorIdQueue", 6)).thenReturn(3);
 	}
 
 	// Get
@@ -276,8 +183,8 @@ public class UserCommentControllerTest {
 	@WithUserDetails("User1")
 	public void addQuestionComment_then_Status201() throws Exception {
 
-		mvc.perform(post("/comments/question/3").contentType(MediaType.APPLICATION_JSON)
-				.content("{\"content\": \"Random Comment\"," + "\"rate\": 5}").characterEncoding("utf-8"))
+		mvc.perform(post("/comments/question").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"targetId\": 3," + "\"content\": \"Random Comment\"," + "\"rate\": 5}").characterEncoding("utf-8"))
 				.andExpect(status().isCreated());
 
 	}
@@ -286,8 +193,8 @@ public class UserCommentControllerTest {
 	@WithUserDetails("User1")
 	public void addAnswerComment_then_Status201() throws Exception {
 
-		mvc.perform(post("/comments/answer/3").contentType(MediaType.APPLICATION_JSON)
-				.content("{\"content\": \"Random Comment\"," + "\"rate\": 5}").characterEncoding("utf-8"))
+		mvc.perform(post("/comments/answer").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"targetId\": 3," + "\"content\": \"Random Comment\"," + "\"rate\": 5}").characterEncoding("utf-8"))
 				.andExpect(status().isCreated());
 
 	}
@@ -296,8 +203,8 @@ public class UserCommentControllerTest {
 	@WithUserDetails("User1")
 	public void addQuestionComment_then_Status403() throws Exception {
 
-		mvc.perform(post("/comments/question/6").contentType(MediaType.APPLICATION_JSON)
-				.content("{\"content\": \"Random Comment\"," + "\"rate\": 5}").characterEncoding("utf-8"))
+		mvc.perform(post("/comments/question").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"targetId\": 6," + "\"content\": \"Random Comment\"," + "\"rate\": 5}").characterEncoding("utf-8"))
 				.andExpect(status().isForbidden()).andExpect(jsonPath("message", is("Access denied")));
 
 	}
@@ -306,8 +213,8 @@ public class UserCommentControllerTest {
 	@WithUserDetails("User1")
 	public void addAnswerComment_then_Status403() throws Exception {
 
-		mvc.perform(post("/comments/answer/6").contentType(MediaType.APPLICATION_JSON)
-				.content("{\"content\": \"Random Comment\"," + "\"rate\": 5}").characterEncoding("utf-8"))
+		mvc.perform(post("/comments/answer").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"targetId\": 6," + "\"content\": \"Random Comment\"," + "\"rate\": 5}").characterEncoding("utf-8"))
 				.andExpect(status().isForbidden())
 				.andExpect(jsonPath("message", is("Access denied")));
 

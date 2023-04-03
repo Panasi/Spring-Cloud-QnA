@@ -32,5 +32,7 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
 	
 	@Query("SELECT q.authorId FROM Question q")
 	public List<Integer> findAllAuthorId();
+	
+	public Integer countByCategoryId(int categoryId);
 
 }

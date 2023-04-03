@@ -68,21 +68,19 @@ public class UserCommentController {
 		return new ResponseEntity<>(commentDTO, HttpStatus.OK);
 	}
 
-	@PostMapping("/question/{questionId}")
+	@PostMapping("/question")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Add a new question comment")
-	public ResponseEntity<CommentRequest> addNewQuestionComment(@RequestBody CommentRequest commentRequest,
-			@PathVariable int questionId) throws NotFoundException, ForbiddenException {
-		service.createQuestionComment(commentRequest, questionId);
+	public ResponseEntity<CommentRequest> addNewQuestionComment(@RequestBody CommentRequest commentRequest) throws NotFoundException, ForbiddenException {
+		service.createQuestionComment(commentRequest);
 		return new ResponseEntity<>(commentRequest, HttpStatus.CREATED);
 	}
 
-	@PostMapping("/answer/{answerId}")
+	@PostMapping("/answer")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Add a new answer comment")
-	public ResponseEntity<CommentRequest> addNewAnswerComment(@RequestBody CommentRequest commentRequest,
-			@PathVariable int answerId) throws NotFoundException, ForbiddenException {
-		service.createAnswerComment(commentRequest, answerId);
+	public ResponseEntity<CommentRequest> addNewAnswerComment(@RequestBody CommentRequest commentRequest) throws NotFoundException, ForbiddenException {
+		service.createAnswerComment(commentRequest);
 		return new ResponseEntity<>(commentRequest, HttpStatus.CREATED);
 	}
 
