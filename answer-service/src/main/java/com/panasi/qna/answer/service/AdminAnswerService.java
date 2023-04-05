@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.panasi.qna.answer.dto.AnswerDTO;
 import com.panasi.qna.answer.entity.Answer;
-import com.panasi.qna.answer.payload.AnswerRequest;
+import com.panasi.qna.answer.payload.AnswerInput;
 
 @Service
 public class AdminAnswerService extends AnswerService {
@@ -56,7 +56,7 @@ public class AdminAnswerService extends AnswerService {
 	
 	// Update certain answer
 	@Transactional
-	public void updateAnswer(AnswerRequest answerRequest, int answerId) throws NotFoundException {
+	public void updateAnswer(AnswerInput answerRequest, int answerId) throws NotFoundException {
 		Answer answer = answerRepository.findById(answerId)
 				.orElseThrow(NotFoundException::new);
 		LocalDateTime dateTime = LocalDateTime.now();

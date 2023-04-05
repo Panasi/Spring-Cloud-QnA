@@ -13,7 +13,7 @@ import com.panasi.qna.category.dto.CategoryDTO;
 import com.panasi.qna.category.entity.Category;
 import com.panasi.qna.category.exception.CategoryIsNotEmptyException;
 import com.panasi.qna.category.mapper.CategoryMapper;
-import com.panasi.qna.category.payload.CategoryRequest;
+import com.panasi.qna.category.payload.CategoryInput;
 import com.panasi.qna.category.repository.CategoryRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ public class CategoryService {
 	}
 
 	// Add a new category
-	public void createCategory(CategoryRequest categoryRequest) {
+	public void createCategory(CategoryInput categoryRequest) {
 		CategoryDTO categoryDTO = CategoryDTO.builder().name(categoryRequest.getName())
 				.parentId(categoryRequest.getParentId()).build();
 		Category category = categoryMapper.toCategory(categoryDTO);
@@ -52,7 +52,7 @@ public class CategoryService {
 
 	// Update certain category
 	@Transactional
-	public void updateCategory(CategoryRequest categoryRequest, int categoryId) throws NotFoundException {
+	public void updateCategory(CategoryInput categoryRequest, int categoryId) throws NotFoundException {
 		Category category = categoryRepository.findById(categoryId).orElseThrow(NotFoundException::new);
 		if (Objects.nonNull(categoryRequest.getName())) {
 			category.setName(categoryRequest.getName());

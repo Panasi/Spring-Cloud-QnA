@@ -18,7 +18,7 @@ import com.panasi.qna.question.dto.QuestionWithAnswersDTO;
 import com.panasi.qna.question.entity.Question;
 import com.panasi.qna.question.exception.DownloadException;
 import com.panasi.qna.question.exception.ForbiddenException;
-import com.panasi.qna.question.payload.QuestionRequest;
+import com.panasi.qna.question.payload.QuestionInput;
 import com.panasi.qna.question.payload.Utils;
 
 @Service
@@ -124,7 +124,7 @@ public class UserQuestionService extends QuestionService {
 
 	// Update certain question
 	@Transactional
-	public void updateQuestion(QuestionRequest questionRequest, int questionId)
+	public void updateQuestion(QuestionInput questionRequest, int questionId)
 			throws NotFoundException, ForbiddenException {
 		int currentUserId = Utils.getCurrentUserId();
 		Question question = questionRepository.findById(questionId).orElseThrow(NotFoundException::new);

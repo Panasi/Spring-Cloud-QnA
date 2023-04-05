@@ -2,10 +2,13 @@ package com.panasi.qna.comment.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.panasi.qna.comment.dto.AnswerCommentDTO;
 import com.panasi.qna.comment.dto.QuestionCommentDTO;
-import com.panasi.qna.comment.payload.CommentRequest;
+import com.panasi.qna.comment.payload.CommentInput;
 import com.panasi.qna.comment.payload.MessageResponse;
 import com.panasi.qna.comment.service.AdminCommentService;
 
@@ -29,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/admin/comments")
+@Validated
 public class AdminCommentController {
 
 	private final AdminCommentService service;
@@ -84,7 +88,8 @@ public class AdminCommentController {
 	@PostMapping("/question")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Add a new question comment")
-	public ResponseEntity<CommentRequest> addNewQuestionComment(@RequestBody CommentRequest commentRequest) throws NotFoundException {
+	public ResponseEntity<CommentInput> addNewQuestionComment(@RequestBody @Valid CommentInput commentRequest)
+			throws NotFoundException {
 		service.createQuestionComment(commentRequest);
 		return new ResponseEntity<>(commentRequest, HttpStatus.CREATED);
 	}
@@ -92,7 +97,8 @@ public class AdminCommentController {
 	@PostMapping("/answer")
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@Operation(summary = "Add a new answer comment")
-	public ResponseEntity<CommentRequest> addNewAnswerComment(@RequestBody CommentRequest commentRequest) throws NotFoundException {
+	public ResponseEntity<CommentInput> addNewAnswerComment(@RequestBody @Valid CommentInput commentRequest)
+			throws NotFoundException {
 		service.createAnswerComment(commentRequest);
 		return new ResponseEntity<>(commentRequest, HttpStatus.CREATED);
 	}
@@ -100,7 +106,7 @@ public class AdminCommentController {
 	@PutMapping("/questions/comment/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Update question comment")
-	public ResponseEntity<CommentRequest> updateQuestionComment(@RequestBody CommentRequest commentRequest,
+	public ResponseEntity<CommentInput> updateQuestionComment(@RequestBody CommentInput commentRequest,
 			@PathVariable int id) throws NotFoundException {
 		service.updateQuestionComment(commentRequest, id);
 		return new ResponseEntity<>(commentRequest, HttpStatus.ACCEPTED);
@@ -109,7 +115,7 @@ public class AdminCommentController {
 	@PutMapping("/answers/comment/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Update answer comment")
-	public ResponseEntity<CommentRequest> updateAnswerComment(@RequestBody CommentRequest commentRequest,
+	public ResponseEntity<CommentInput> updateAnswerComment(@RequestBody CommentInput commentRequest,
 			@PathVariable int id) throws NotFoundException {
 		service.updateAnswerComment(commentRequest, id);
 		return new ResponseEntity<>(commentRequest, HttpStatus.ACCEPTED);

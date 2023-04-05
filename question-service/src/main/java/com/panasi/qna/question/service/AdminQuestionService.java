@@ -12,7 +12,7 @@ import com.panasi.qna.question.dto.AnswerDTO;
 import com.panasi.qna.question.dto.QuestionDTO;
 import com.panasi.qna.question.dto.QuestionWithAnswersDTO;
 import com.panasi.qna.question.entity.Question;
-import com.panasi.qna.question.payload.QuestionRequest;
+import com.panasi.qna.question.payload.QuestionInput;
 
 @Service
 public class AdminQuestionService extends QuestionService {
@@ -89,7 +89,7 @@ public class AdminQuestionService extends QuestionService {
 
 	// Update certain question
 	@Transactional
-	public void updateQuestion(QuestionRequest questionRequest, int questionId) throws NotFoundException {
+	public void updateQuestion(QuestionInput questionRequest, int questionId) throws NotFoundException {
 		Question question = questionRepository.findById(questionId).orElseThrow(NotFoundException::new);
 		LocalDateTime dateTime = LocalDateTime.now();
 		question.setDate(dateTime);

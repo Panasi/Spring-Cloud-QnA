@@ -2,6 +2,8 @@ package com.panasi.qna.category.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.panasi.qna.category.dto.CategoryDTO;
 import com.panasi.qna.category.exception.CategoryIsNotEmptyException;
-import com.panasi.qna.category.payload.CategoryRequest;
+import com.panasi.qna.category.payload.CategoryInput;
 import com.panasi.qna.category.payload.MessageResponse;
 import com.panasi.qna.category.service.CategoryService;
 
@@ -60,7 +62,7 @@ public class AdminCategoryController {
 	@PostMapping
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Add a new category")
-	public ResponseEntity<CategoryRequest> addNewCategory(@RequestBody CategoryRequest categoryRequest) {
+	public ResponseEntity<CategoryInput> addNewCategory(@RequestBody @Valid CategoryInput categoryRequest) {
 		categoryService.createCategory(categoryRequest);
 		return new ResponseEntity<>(categoryRequest, HttpStatus.CREATED);
 	}
@@ -68,7 +70,7 @@ public class AdminCategoryController {
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Update category")
-	public ResponseEntity<CategoryRequest> updateCategory(@RequestBody CategoryRequest categoryRequest,
+	public ResponseEntity<CategoryInput> updateCategory(@RequestBody CategoryInput categoryRequest,
 			@PathVariable int id) throws NotFoundException {
 		categoryService.updateCategory(categoryRequest, id);
 		return new ResponseEntity<>(categoryRequest, HttpStatus.ACCEPTED);

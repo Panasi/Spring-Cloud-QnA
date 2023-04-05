@@ -1,10 +1,13 @@
 package com.panasi.qna.security.exception;
 
+import java.util.List;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -25,6 +28,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 		ApiError apiError = new ApiError("Malformed JSON Request", ex.getMessage());
+		return new ResponseEntity<>(apiError, status);
+	}
+	
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		List<String> validationList = ex.getBindingResult().getFieldErrors().stream()
+				.map(fieldError -> fieldError.getField() + " - " + fieldError.getDefaultMessage()).toList();
+		ApiError apiError = new ApiError("Validation Error", validationList.toString());
 		return new ResponseEntity<>(apiError, status);
 	}
 

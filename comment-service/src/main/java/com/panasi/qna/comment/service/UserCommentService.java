@@ -13,7 +13,7 @@ import com.panasi.qna.comment.dto.QuestionCommentDTO;
 import com.panasi.qna.comment.entity.AnswerComment;
 import com.panasi.qna.comment.entity.QuestionComment;
 import com.panasi.qna.comment.exception.ForbiddenException;
-import com.panasi.qna.comment.payload.CommentRequest;
+import com.panasi.qna.comment.payload.CommentInput;
 import com.panasi.qna.comment.payload.Utils;
 
 @Service
@@ -92,7 +92,7 @@ public class UserCommentService extends CommentService {
 	}
 
 	// Add a new comment to question
-	public void createQuestionComment(CommentRequest commentRequest) throws NotFoundException, ForbiddenException {
+	public void createQuestionComment(CommentInput commentRequest) throws NotFoundException, ForbiddenException {
 		int questionId = commentRequest.getTargetId();
 		if (!isQuestionExists(questionId)) {
 			throw new NotFoundException();
@@ -115,7 +115,7 @@ public class UserCommentService extends CommentService {
 	}
 
 	// Add a new comment to answer
-	public void createAnswerComment(CommentRequest commentRequest) throws NotFoundException, ForbiddenException {
+	public void createAnswerComment(CommentInput commentRequest) throws NotFoundException, ForbiddenException {
 		int answerId = commentRequest.getTargetId();
 		if (!isAnswerExists(answerId)) {
 			throw new NotFoundException();
@@ -139,7 +139,7 @@ public class UserCommentService extends CommentService {
 
 	// Update question comment
 	@Transactional
-	public void updateQuestionComment(CommentRequest commentRequest, int commentId)
+	public void updateQuestionComment(CommentInput commentRequest, int commentId)
 			throws NotFoundException, ForbiddenException {
 		QuestionComment comment = questionCommentRepository.findById(commentId).orElseThrow(NotFoundException::new);
 
@@ -162,7 +162,7 @@ public class UserCommentService extends CommentService {
 
 	// Update answer comment
 	@Transactional
-	public void updateAnswerComment(CommentRequest commentRequest, int commentId)
+	public void updateAnswerComment(CommentInput commentRequest, int commentId)
 			throws NotFoundException, ForbiddenException {
 		AnswerComment comment = answerCommentRepository.findById(commentId).orElseThrow(NotFoundException::new);
 

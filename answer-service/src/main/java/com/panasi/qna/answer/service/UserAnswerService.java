@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.panasi.qna.answer.dto.AnswerDTO;
 import com.panasi.qna.answer.entity.Answer;
 import com.panasi.qna.answer.exception.ForbiddenException;
-import com.panasi.qna.answer.payload.AnswerRequest;
+import com.panasi.qna.answer.payload.AnswerInput;
 import com.panasi.qna.answer.payload.Utils;
 
 @Service
@@ -60,7 +60,7 @@ public class UserAnswerService extends AnswerService {
 	
 	// Update certain answer
 	@Transactional
-	public void updateAnswer(AnswerRequest answerRequest, int answerId) throws NotFoundException, ForbiddenException {
+	public void updateAnswer(AnswerInput answerRequest, int answerId) throws NotFoundException, ForbiddenException {
 		int currentUserId = Utils.getCurrentUserId();
 		Answer answer = answerRepository.findById(answerId)
 				.orElseThrow(NotFoundException::new);

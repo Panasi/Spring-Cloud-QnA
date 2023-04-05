@@ -2,6 +2,8 @@ package com.panasi.qna.security.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.panasi.qna.security.exception.DuplicateRegistrationException;
 import com.panasi.qna.security.payload.JwtResponse;
 import com.panasi.qna.security.payload.MessageResponse;
-import com.panasi.qna.security.payload.SignInRequest;
-import com.panasi.qna.security.payload.SignUpRequest;
+import com.panasi.qna.security.payload.SignInInput;
+import com.panasi.qna.security.payload.SignUpInput;
 import com.panasi.qna.security.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
@@ -34,14 +36,14 @@ public class SecurityController {
 	}
 
 	@PostMapping("/signin")
-	public ResponseEntity<JwtResponse> authenticateUser(@RequestBody SignInRequest signInRequest) {
+	public ResponseEntity<JwtResponse> authenticateUser(@RequestBody @Valid SignInInput signInRequest) {
 
 		JwtResponse response = authService.singnInUser(signInRequest);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@PostMapping("/signup")
-	public ResponseEntity<MessageResponse> registerUser(@RequestBody SignUpRequest signUpRequest)
+	public ResponseEntity<MessageResponse> registerUser(@RequestBody @Valid SignUpInput signUpRequest)
 			throws DuplicateRegistrationException {
 		authService.signUpUser(signUpRequest);
 

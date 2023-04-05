@@ -2,10 +2,13 @@ package com.panasi.qna.comment.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.panasi.qna.comment.dto.AnswerCommentDTO;
 import com.panasi.qna.comment.dto.QuestionCommentDTO;
 import com.panasi.qna.comment.exception.ForbiddenException;
-import com.panasi.qna.comment.payload.CommentRequest;
+import com.panasi.qna.comment.payload.CommentInput;
 import com.panasi.qna.comment.service.UserCommentService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/comments")
+@Validated
 public class UserCommentController {
 
 	private final UserCommentService service;
@@ -71,7 +75,8 @@ public class UserCommentController {
 	@PostMapping("/question")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Add a new question comment")
-	public ResponseEntity<CommentRequest> addNewQuestionComment(@RequestBody CommentRequest commentRequest) throws NotFoundException, ForbiddenException {
+	public ResponseEntity<CommentInput> addNewQuestionComment(@RequestBody @Valid CommentInput commentRequest)
+			throws NotFoundException, ForbiddenException {
 		service.createQuestionComment(commentRequest);
 		return new ResponseEntity<>(commentRequest, HttpStatus.CREATED);
 	}
@@ -79,7 +84,8 @@ public class UserCommentController {
 	@PostMapping("/answer")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Add a new answer comment")
-	public ResponseEntity<CommentRequest> addNewAnswerComment(@RequestBody CommentRequest commentRequest) throws NotFoundException, ForbiddenException {
+	public ResponseEntity<CommentInput> addNewAnswerComment(@RequestBody @Valid CommentInput commentRequest)
+			throws NotFoundException, ForbiddenException {
 		service.createAnswerComment(commentRequest);
 		return new ResponseEntity<>(commentRequest, HttpStatus.CREATED);
 	}
@@ -87,7 +93,7 @@ public class UserCommentController {
 	@PutMapping("/questions/comment/{id}")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Update question comment")
-	public ResponseEntity<CommentRequest> updateQuestionComment(@RequestBody CommentRequest commentRequest,
+	public ResponseEntity<CommentInput> updateQuestionComment(@RequestBody CommentInput commentRequest,
 			@PathVariable int id) throws NotFoundException, ForbiddenException {
 		service.updateQuestionComment(commentRequest, id);
 		return new ResponseEntity<>(commentRequest, HttpStatus.ACCEPTED);
@@ -96,7 +102,7 @@ public class UserCommentController {
 	@PutMapping("/answers/comment/{id}")
 	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Update answer comment")
-	public ResponseEntity<CommentRequest> updateAnswerComment(@RequestBody CommentRequest commentRequest,
+	public ResponseEntity<CommentInput> updateAnswerComment(@RequestBody CommentInput commentRequest,
 			@PathVariable int id) throws NotFoundException, ForbiddenException {
 		service.updateAnswerComment(commentRequest, id);
 		return new ResponseEntity<>(commentRequest, HttpStatus.ACCEPTED);

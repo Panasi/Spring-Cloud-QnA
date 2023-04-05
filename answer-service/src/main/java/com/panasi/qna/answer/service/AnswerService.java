@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import com.panasi.qna.answer.dto.AnswerDTO;
 import com.panasi.qna.answer.entity.Answer;
 import com.panasi.qna.answer.mapper.AnswerMapper;
-import com.panasi.qna.answer.payload.AnswerRequest;
+import com.panasi.qna.answer.payload.AnswerInput;
 import com.panasi.qna.answer.payload.Utils;
 import com.panasi.qna.answer.repository.AnswerRepository;
 
@@ -33,7 +33,7 @@ public class AnswerService {
 	protected static final String ALL = "all";
 
 	// Add a new answer
-	public void createAnswer(AnswerRequest answerRequest) throws NotFoundException {
+	public void createAnswer(AnswerInput answerRequest) throws NotFoundException {
 		if (!isQuestionExists(answerRequest.getQuestionId())) {
 			throw new NotFoundException();
 		}

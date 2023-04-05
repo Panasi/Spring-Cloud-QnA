@@ -20,7 +20,7 @@ import com.panasi.qna.question.dto.QuestionWithAnswersDTO;
 import com.panasi.qna.question.entity.Question;
 import com.panasi.qna.question.mapper.FullQuestionMapper;
 import com.panasi.qna.question.mapper.QuestionMapper;
-import com.panasi.qna.question.payload.QuestionRequest;
+import com.panasi.qna.question.payload.QuestionInput;
 import com.panasi.qna.question.payload.Utils;
 import com.panasi.qna.question.repository.QuestionRepository;
 
@@ -43,7 +43,7 @@ public class QuestionService {
 	protected static final String ALL = "all";
 
 	// Add a new question
-	public void createQuestion(QuestionRequest questionRequest) throws NotFoundException {
+	public void createQuestion(QuestionInput questionRequest) throws NotFoundException {
 		if (!isCategoryExists(questionRequest.getCategoryId())) {
 			throw new NotFoundException();
 		}

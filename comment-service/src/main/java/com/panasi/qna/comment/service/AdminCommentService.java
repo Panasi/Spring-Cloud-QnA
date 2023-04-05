@@ -12,7 +12,7 @@ import com.panasi.qna.comment.dto.AnswerCommentDTO;
 import com.panasi.qna.comment.dto.QuestionCommentDTO;
 import com.panasi.qna.comment.entity.AnswerComment;
 import com.panasi.qna.comment.entity.QuestionComment;
-import com.panasi.qna.comment.payload.CommentRequest;
+import com.panasi.qna.comment.payload.CommentInput;
 import com.panasi.qna.comment.payload.Utils;
 
 @Service
@@ -59,7 +59,7 @@ public class AdminCommentService extends CommentService {
 	}
 
 	// Add a new comment to question
-	public void createQuestionComment(CommentRequest commentRequest) throws NotFoundException {
+	public void createQuestionComment(CommentInput commentRequest) throws NotFoundException {
 		int questionId = commentRequest.getTargetId();
 		if (!isQuestionExists(questionId)) {
 			throw new NotFoundException();
@@ -75,7 +75,7 @@ public class AdminCommentService extends CommentService {
 	}
 
 	// Add a new comment to answer
-	public void createAnswerComment(CommentRequest commentRequest) throws NotFoundException {
+	public void createAnswerComment(CommentInput commentRequest) throws NotFoundException {
 		int answerId = commentRequest.getTargetId();
 		if (!isAnswerExists(answerId)) {
 			throw new NotFoundException();
@@ -91,7 +91,7 @@ public class AdminCommentService extends CommentService {
 
 	// Update question comment
 	@Transactional
-	public void updateQuestionComment(CommentRequest commentRequest, int commentId) throws NotFoundException {
+	public void updateQuestionComment(CommentInput commentRequest, int commentId) throws NotFoundException {
 		QuestionComment comment = questionCommentRepository.findById(commentId).orElseThrow(NotFoundException::new);
 		LocalDateTime dateTime = LocalDateTime.now();
 		comment.setDate(dateTime);
@@ -106,7 +106,7 @@ public class AdminCommentService extends CommentService {
 
 	// Update answer comment
 	@Transactional
-	public void updateAnswerComment(CommentRequest commentRequest, int commentId) throws NotFoundException {
+	public void updateAnswerComment(CommentInput commentRequest, int commentId) throws NotFoundException {
 		AnswerComment comment = answerCommentRepository.findById(commentId).orElseThrow(NotFoundException::new);
 		LocalDateTime dateTime = LocalDateTime.now();
 		comment.setDate(dateTime);

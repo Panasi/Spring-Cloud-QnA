@@ -2,6 +2,8 @@ package com.panasi.qna.answer.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.panasi.qna.answer.dto.AnswerDTO;
-import com.panasi.qna.answer.payload.AnswerRequest;
+import com.panasi.qna.answer.payload.AnswerInput;
 import com.panasi.qna.answer.payload.MessageResponse;
 import com.panasi.qna.answer.service.AdminAnswerService;
 
@@ -61,7 +63,7 @@ public class AdminAnswerController {
 	@PostMapping()
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Add a new answer")
-	public ResponseEntity<AnswerRequest> addNewAnswer(@RequestBody AnswerRequest answerRequest)
+	public ResponseEntity<AnswerInput> addNewAnswer(@RequestBody @Valid AnswerInput answerRequest)
 			throws NotFoundException {
 		service.createAnswer(answerRequest);
 		return new ResponseEntity<>(answerRequest, HttpStatus.CREATED);
@@ -70,7 +72,7 @@ public class AdminAnswerController {
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Update answer")
-	public ResponseEntity<AnswerRequest> updateAnswer(@RequestBody AnswerRequest answerRequest, @PathVariable int id)
+	public ResponseEntity<AnswerInput> updateAnswer(@RequestBody AnswerInput answerRequest, @PathVariable int id)
 			throws NotFoundException {
 		service.updateAnswer(answerRequest, id);
 		return new ResponseEntity<>(answerRequest, HttpStatus.ACCEPTED);

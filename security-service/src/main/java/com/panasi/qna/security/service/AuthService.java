@@ -21,8 +21,8 @@ import com.panasi.qna.security.entity.User;
 import com.panasi.qna.security.exception.DuplicateRegistrationException;
 import com.panasi.qna.security.payload.ERole;
 import com.panasi.qna.security.payload.JwtResponse;
-import com.panasi.qna.security.payload.SignInRequest;
-import com.panasi.qna.security.payload.SignUpRequest;
+import com.panasi.qna.security.payload.SignInInput;
+import com.panasi.qna.security.payload.SignUpInput;
 import com.panasi.qna.security.repository.RoleRepository;
 import com.panasi.qna.security.repository.UserRepository;
 import com.panasi.qna.security.util.JwtUtils;
@@ -40,7 +40,7 @@ public class AuthService {
 	private final PasswordEncoder encoder;
 	private final RestTemplate restTemplate = new RestTemplate();
 
-	public JwtResponse singnInUser(SignInRequest signInRequest) {
+	public JwtResponse singnInUser(SignInInput signInRequest) {
 
 		boolean isUserExists = userRepository.existsByUsername(signInRequest.getUsername());
 		if (!isUserExists) {
@@ -59,7 +59,7 @@ public class AuthService {
 
 	}
 
-	public void signUpUser(SignUpRequest signUpRequest) throws DuplicateRegistrationException {
+	public void signUpUser(SignUpInput signUpRequest) throws DuplicateRegistrationException {
 
 		boolean isUsernameTaken = userRepository.existsByUsername(signUpRequest.getUsername());
 		boolean isEmailTaken = userRepository.existsByEmail(signUpRequest.getEmail());

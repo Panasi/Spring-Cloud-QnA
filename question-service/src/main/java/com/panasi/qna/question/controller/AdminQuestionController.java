@@ -3,6 +3,8 @@ package com.panasi.qna.question.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.panasi.qna.question.dto.QuestionDTO;
 import com.panasi.qna.question.dto.QuestionWithAnswersDTO;
 import com.panasi.qna.question.payload.MessageResponse;
-import com.panasi.qna.question.payload.QuestionRequest;
+import com.panasi.qna.question.payload.QuestionInput;
 import com.panasi.qna.question.service.AdminQuestionService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -83,7 +85,7 @@ public class AdminQuestionController {
 	@PostMapping
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Add a new question")
-	public ResponseEntity<QuestionRequest> addNewQuestion(@RequestBody QuestionRequest questionRequest)
+	public ResponseEntity<QuestionInput> addNewQuestion(@RequestBody @Valid QuestionInput questionRequest)
 			throws NotFoundException {
 		service.createQuestion(questionRequest);
 		return new ResponseEntity<>(questionRequest, HttpStatus.CREATED);
@@ -92,7 +94,7 @@ public class AdminQuestionController {
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "Update question")
-	public ResponseEntity<QuestionRequest> updateQuestion(@RequestBody QuestionRequest questionRequest,
+	public ResponseEntity<QuestionInput> updateQuestion(@RequestBody QuestionInput questionRequest,
 			@PathVariable int id) throws NotFoundException {
 		service.updateQuestion(questionRequest, id);
 		return new ResponseEntity<>(questionRequest, HttpStatus.ACCEPTED);
