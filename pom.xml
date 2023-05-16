@@ -17,5 +17,6 @@
 	  <module>comment-service</module>
 	  <module>pdf-service</module>
 	  <module>mail-service</module>
+	  <module>zipkin-server</module>
   </modules>
 </project>

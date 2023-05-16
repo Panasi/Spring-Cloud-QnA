@@ -31,6 +31,24 @@
             </column>
         </createTable>
         
+        <createTable  tableName="tokens">  
+            <column  name="id"  type="int"  autoIncrement="true">  
+                <constraints  primaryKey="true"  nullable="false"/>  
+            </column>
+            <column  name="jwt"  type="varchar(500)"> 
+            	<constraints  nullable="false"/> 
+            </column>
+            <column  name="type"  type="varchar(50)"> 
+            	<constraints  nullable="false"/> 
+            </column>
+            <column  name="expired"  type="boolean"> 
+            	<constraints  nullable="false"/> 
+            </column>
+            <column  name="revoked"  type="boolean"> 
+            	<constraints  nullable="false"/>
+            </column>
+        </createTable>
+        
         <createTable  tableName="user_roles">  
             <column  name="id"  type="int"  autoIncrement="true">  
                 <constraints  primaryKey="true"  nullable="false"/>  
@@ -40,6 +58,18 @@
             </column>
             <column  name="role_id"  type="int"> 
             	<constraints  nullable="false" foreignKeyName="fk_roles" references="roles(id)"/> 
+            </column>
+        </createTable>
+        
+        <createTable  tableName="user_tokens">  
+            <column  name="id"  type="int"  autoIncrement="true">  
+                <constraints  primaryKey="true"  nullable="false"/>  
+            </column>
+            <column  name="user_id"  type="int"> 
+            	<constraints  nullable="false" foreignKeyName="fk_users" references="users(id)"/>
+            </column>
+            <column  name="token_id"  type="int"> 
+            	<constraints  nullable="false" foreignKeyName="fk_tokens" references="tokens(id)"/>
             </column>
         </createTable>
         

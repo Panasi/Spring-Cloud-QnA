@@ -2,6 +2,7 @@ package com.panasi.qna.security.exception;
 
 import java.util.List;
 
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,18 +46,23 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		ApiError apiError = new ApiError("Internal Exception", ex.getMessage());
 		return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
 	}
-
-	@ExceptionHandler(BadCredentialsException.class)
-	protected ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
-		ApiError apiError = new ApiError("Bad Credentials", ex.getMessage());
+	
+	@ExceptionHandler(NotFoundException.class)
+	protected ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
+		ApiError apiError = new ApiError("User not found", ex.getMessage());
 		return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
 	}
-
-	@ExceptionHandler(DuplicateRegistrationException.class)
-	protected ResponseEntity<Object> handleUsernameNotFoundException(DuplicateRegistrationException ex,
-			WebRequest request) {
-		ApiError apiError = new ApiError("Dublicate", ex.getMessage());
-		return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+	
+	@ExceptionHandler(BadCredentialsException.class)
+	protected ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
+		ApiError apiError = new ApiError("Bad credentials", ex.getMessage());
+		return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
+	}
+	
+	@ExceptionHandler(DuplicateException.class)
+	protected ResponseEntity<Object> handleDuplicateException(DuplicateException ex, WebRequest request) {
+		ApiError apiError = new ApiError("Duplicate", ex.getMessage());
+		return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
 	}
 
 }

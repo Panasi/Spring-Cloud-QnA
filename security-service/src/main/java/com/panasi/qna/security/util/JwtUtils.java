@@ -4,11 +4,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import com.panasi.qna.security.service.UserDetailsImpl;
+import com.panasi.qna.security.entity.Role;
+import com.panasi.qna.security.entity.User;
+import com.panasi.qna.security.payload.ERole;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,13 +22,23 @@ public class JwtUtils {
 	@Value("${auth.jwtExpirationMs}")
 	private int jwtExpirationMs;
 
-	public String generateJwtToken(Authentication authentication) {
-		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-		List<String> roles = userPrincipal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-		return Jwts.builder().setId(Integer.toString((userPrincipal.getId()))).setSubject((userPrincipal.getUsername()))
-				.claim("roles", roles).setIssuedAt(new Date())
+	public String generateJwtToken(User user) {
+		List<ERole> roles = user.getRoles().stream().map(Role::getName).toList();
+		
+		return Jwts.builder()
+				.setId(Integer.toString((user.getId())))
+				.setSubject((user.getUsername()))
+				.claim("roles", roles)
+				.setIssuedAt(new Date())
 				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
 				.signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+	}
+	
+	public Integer getUserIdFromJwt(String jwt) {
+		
+		return Integer.valueOf(Jwts.parser()
+				.setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody().getId());
+		
 	}
 
 }
